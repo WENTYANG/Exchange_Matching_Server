@@ -13,7 +13,7 @@ services:
     user: nobody
     volumes:       
       - ./server:/erss
-    command: ./engine
+    command: ./server
     ports:
       - "12345:12345"
     expose:

@@ -2,4 +2,4 @@
 hw4 in ECE 568
 
 test permission
-test7
+test70
