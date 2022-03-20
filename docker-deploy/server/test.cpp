@@ -23,10 +23,13 @@ void parseXML(string xml) {
     if (type == TRANSACTION) {
         TransRequest* trans = parse_trans(doc);
         trans->printRequest();
+        delete (trans);
     } else if (type == CREATE) {
         CreateRequest* create = parse_create(doc);
         create->printRequest();
+        delete (create);
     }
+    delete (doc);
 }
 
 int main() {

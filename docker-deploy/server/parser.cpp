@@ -1,12 +1,14 @@
 #include "parser.h"
 
-// Remember to delete xml doc after parsing/writing into the database
+// 记得parse完要delete xml doc
+/*Convert xml string to XMLDocument object(allocated memory)*/
 XMLDocument* convert_to_file(string xml) {
     tinyxml2::XMLDocument* doc = new XMLDocument();
     doc->Parse(xml.c_str());
     return doc;
 }
 
+/*Determine the type of request: create or transaction*/
 int request_type(XMLDocument* xml) {
     XMLElement* root = xml->RootElement();
     if (strcmp(root->Name(), "create") == 0)
@@ -18,7 +20,7 @@ int request_type(XMLDocument* xml) {
     }
 }
 
-// Remember to delete request after writing into the database
+// 记得parse完要delete request
 CreateRequest* parse_create(XMLDocument* xml) {
     CreateRequest* request = new CreateRequest();
     XMLElement* root = xml->RootElement();
@@ -51,6 +53,7 @@ CreateRequest* parse_create(XMLDocument* xml) {
     return request;
 }
 
+// 记得parse完要delete request
 TransRequest* parse_trans(XMLDocument* xml) {
     TransRequest* request = new TransRequest();
     XMLElement* root = xml->RootElement();
