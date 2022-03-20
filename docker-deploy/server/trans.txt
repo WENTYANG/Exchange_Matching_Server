@@ -1,0 +1,8 @@
+<transactions id="123">
+  <order sym="Duke" amount="200" limit="30"/>
+  <query id="54321"/>
+  <cancel id="78899"/>
+  <query id="10101"/>
+  <cancel id="11111"/>
+  <order sym="USA" amount="300" limit="40"/>
+</transactions>

@@ -1,3 +1,5 @@
+CC=g++
+CFLAGS=-O3
 
 all: server
 
