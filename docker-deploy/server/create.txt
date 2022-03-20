@@ -1,0 +1,14 @@
+<create> 
+  <account id="123" balance="200"/>
+  <symbol sym="Duke">
+    <account id="1">100</account>
+    <account id="2">200</account>
+    <account id="3">300</account>
+  </symbol>
+  <symbol sym="USA">
+    <account id="4">400</account>
+    <account id="5">500</account>
+    <account id="6">600</account>
+  </symbol>
+  <account id="999" balance="1000"/>
+</create>
