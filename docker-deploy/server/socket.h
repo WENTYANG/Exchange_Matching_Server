@@ -1,5 +1,5 @@
-#ifndef _FUNCTION_H
-#define _FUNCTION_H
+#ifndef _SOCKET_H
+#define _SOCKET_H
 
 #include <arpa/inet.h>
 #include <netdb.h>
