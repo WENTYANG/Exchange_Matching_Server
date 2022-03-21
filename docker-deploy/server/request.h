@@ -16,53 +16,47 @@ using namespace tinyxml2;
 using namespace std;
 
 /* ------------------------ Create Attribute ------------------------ */
-class Account
-{
-public:
+class Account {
+   public:
     int account_id;
-    int balance;
+    float balance;
     Account(int id, int balance) : account_id(id), balance(balance){};
 };
-class Share
-{
-public:
+class Share {
+   public:
     int account_id;
     int num;
     Share(int id, int num) : account_id(id), num(num){};
 };
-class Symbol
-{
+class Symbol {
     /* A string of symbol name and a vector of account_ids
     and the number of shares in that account */
-public:
+   public:
     string sym;
     vector<Share> shares;
     Symbol(string sym) : sym(sym){};
 };
 
 /* ------------------------ Transaction Attribute ------------------------ */
-class Order
-{
-public:
+class Order {
+   public:
     string sym;
     int amount;
-    int limit;
+    float limit;
     Order(string sym, int amount, int limit)
         : sym(sym), amount(amount), limit(limit){};
 };
 
 /* ------------------------ Abstract Request ------------------------ */
-class Request
-{
-public:
+class Request {
+   public:
     virtual void printRequest() = 0;
     virtual void executeRequest() = 0;
 };
 
 /* ------------------------ "CREATE" Request ------------------------ */
-class CreateRequest : public Request
-{
-public:
+class CreateRequest : public Request {
+   public:
     vector<Account> accounts;
     vector<Symbol> symbols;
     virtual void printRequest();
@@ -70,9 +64,8 @@ public:
 };
 
 /* ------------------------ "TRANSACTION" Request ------------------------ */
-class TransRequest : public Request
-{
-public:
+class TransRequest : public Request {
+   public:
     int account_id;
     vector<Order> orders;
     vector<int> queries;
