@@ -11,6 +11,7 @@
         "utility": "cpp",
         "new": "cpp",
         "string": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "fstream": "cpp"
     }
 }
