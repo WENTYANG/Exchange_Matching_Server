@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_PASSWORD: passw0rd
       POSTGRES_USER: postgres
-      POSTGRES_DB: Exchange_Server
+      POSTGRES_DB: exchange_server
     restart: always
   server:
     build: ./server
