@@ -31,8 +31,7 @@ void creatTable(connection *C, string fileName)
 void dropAllTable(connection *C)
 {
     work W(*C);
-    string sql = "DROP TABLE IF EXISTS account;DROP TABLE IF EXISTS symbol;DROP TABLE "
-                 "IF EXISTS order;";
+    string sql = "DROP TABLE IF EXISTS account;DROP TABLE IF EXISTS symbol;DROP TABLE IF EXISTS orders;";
 
     W.exec(sql);
     W.commit();
