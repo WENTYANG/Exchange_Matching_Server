@@ -2,20 +2,23 @@
 #include "socket.h"
 #include "clientInfo.h"
 #include "exception.h"
+#include "sql_function.h"
 #include <pthread.h>
 #include <string>
 #include <cstdio>
 #include <vector>
+#include <iostream>
 
 #define MAX_LENGTH 65536
 
 using namespace std;
 
+
 connection *C;
 
 void Server::run()
 {
-    connectDB("Exchange_Server", "postgres", "passw0rd");
+    connectDB("exchange_server", "postgres", "passw0rd");
 
     // create server socket, listen to port
     int server_fd;
@@ -67,7 +70,7 @@ void Server::run()
 void Server::connectDB(string dbName, string userName, string password)
 {
     printf("Connect to %s with User: %s, using Password: %s\n", dbName.c_str(), userName.c_str(), password.c_str());
-    C = new connection("dbname=Exchange_Server user=postgres password=passw0rd");
+    C = new connection("dbname=" + dbName + " user="+ userName +" password="+ password);
     if (C->is_open()){
         cout << "Opened database successfully: " << C->dbname() << endl;
     }
@@ -75,8 +78,10 @@ void Server::connectDB(string dbName, string userName, string password)
         throw MyException("Can't open database.");
     }
 
-    // drop table
-    // create table
+
+    dropAllTable(C);
+
+    creatTable(C,"../sql/table.sql");
 }
 
 void *Server::handleRequest(void *info)
