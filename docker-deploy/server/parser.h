@@ -12,50 +12,42 @@
 using namespace tinyxml2;
 using namespace std;
 
-/* ------------------------ Create request ------------------------ */
-class Account {
-   public:
+/* ------------------------ Create Attribute ------------------------ */
+class Account
+{
+public:
     int account_id;
     int balance;
     Account(int id, int balance) : account_id(id), balance(balance){};
 };
-class Share {
-   public:
+class Share
+{
+public:
     int account_id;
     int num;
     Share(int id, int num) : account_id(id), num(num){};
 };
-class Symbol {
+class Symbol
+{
     /* A string of symbol name and a vector of account_ids
     and the number of shares in that account */
-   public:
+public:
     string sym;
     vector<Share> shares;
     Symbol(string sym) : sym(sym){};
 };
-class CreateRequest {
-   public:
-    vector<Account> accounts;
-    vector<Symbol> symbols;
-    void printRequest() {
-        cout << "CreateRequest" << endl;
-        cout << "Accounts" << endl;
-        for (auto a : accounts) {
-            cout << "id: " << a.account_id << " balance:" << a.balance << endl;
-        }
-        cout << "Symbols" << endl;
-        for (auto s : symbols) {
-            cout << "sym: " << s.sym << endl;
-            for (auto sh : s.shares) {
-                cout << "id: " << sh.account_id << " num:" << sh.num << endl;
-            }
-        }
-    }
+
+/* ------------------------ Abstract Request ------------------------ */
+class Request
+{
+public:
+    virtual void printRequest() = 0;
 };
 
-/* ------------------------ Transaction request ------------------------ */
-class Order {
-   public:
+/* ------------------------ Transaction Attribute ------------------------ */
+class Order
+{
+public:
     string sym;
     int amount;
     int limit;
@@ -63,32 +55,62 @@ class Order {
         : sym(sym), amount(amount), limit(limit){};
 };
 
-class TransRequest {
-   public:
+class CreateRequest : public Request
+{
+public:
+    vector<Account> accounts;
+    vector<Symbol> symbols;
+    virtual void printRequest()
+    {
+        cout << "CreateRequest" << endl;
+        cout << "Accounts" << endl;
+        for (auto a : accounts)
+        {
+            cout << "id: " << a.account_id << " balance:" << a.balance << endl;
+        }
+        cout << "Symbols" << endl;
+        for (auto s : symbols)
+        {
+            cout << "sym: " << s.sym << endl;
+            for (auto sh : s.shares)
+            {
+                cout << "id: " << sh.account_id << " num:" << sh.num << endl;
+            }
+        }
+    }
+};
+
+class TransRequest : public Request
+{
+public:
     int account_id;
     vector<Order> orders;
     vector<int> queries;
     vector<int> cancels;
-    void printRequest() {
+    virtual void printRequest()
+    {
         cout << "TransRequest" << endl;
         cout << "Orders" << endl;
-        for (auto o : orders) {
+        for (auto o : orders)
+        {
             cout << "sym: " << o.sym << " amount:" << o.amount
                  << " limit:" << o.limit << endl;
         }
         cout << "Queries" << endl;
-        for (auto q : queries) {
+        for (auto q : queries)
+        {
             cout << q << endl;
         }
         cout << "Cancels" << endl;
-        for (auto c : cancels) {
+        for (auto c : cancels)
+        {
             cout << c << endl;
         }
     }
 };
 
 /* ------------------------ Parse functions ------------------------ */
-XMLDocument* convert_to_file(string xml);
-int request_type(XMLDocument* xml);
-CreateRequest* parse_create(XMLDocument* xml);
-TransRequest* parse_trans(XMLDocument* xml);
+XMLDocument *convert_to_file(string xml);
+int request_type(XMLDocument *xml);
+Request *parse_create(XMLDocument *xml);
+Request *parse_trans(XMLDocument *xml);

@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    //send request to server
     string XMLrequest = "test xml";
     send(server_fd,XMLrequest.c_str(),XMLrequest.length(),0);
 
