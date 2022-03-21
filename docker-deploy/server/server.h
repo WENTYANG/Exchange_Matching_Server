@@ -11,6 +11,7 @@
 #include "exception.h"
 #include "socket.h"
 #include "sql_function.h"
+
 using namespace pqxx;
 
 extern connection* C;
