@@ -1,13 +1,5 @@
 #include "server.h"
-#include "socket.h"
-#include "clientInfo.h"
-#include "exception.h"
-#include "sql_function.h"
-#include <pthread.h>
-#include <string>
-#include <cstdio>
-#include <vector>
-#include <iostream>
+
 
 #define MAX_LENGTH 65536
 

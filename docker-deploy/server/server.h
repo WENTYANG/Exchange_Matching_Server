@@ -2,6 +2,16 @@
 #define _SERVER_H
 
 #include <pqxx/pqxx>
+#include "socket.h"
+#include "clientInfo.h"
+#include "exception.h"
+#include "sql_function.h"
+#include <pthread.h>
+#include <string>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+
 using namespace pqxx;
 
 extern connection *C;
