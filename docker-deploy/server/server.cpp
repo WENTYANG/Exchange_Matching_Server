@@ -74,6 +74,9 @@ void Server::connectDB(string dbName, string userName, string password)
     else{
         throw MyException("Can't open database.");
     }
+
+    // drop table
+    // create table
 }
 
 void *Server::handleRequest(void *info)
