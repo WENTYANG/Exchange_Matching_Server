@@ -11,9 +11,11 @@
 
 using namespace std;
 
-void server::run()
+connection *C;
+
+void Server::run()
 {
-    connectDB("serverdb", "postgres", "passw0rd");
+    connectDB("Exchange_Server", "postgres", "passw0rd");
 
     // create server socket, listen to port
     int server_fd;
@@ -51,10 +53,10 @@ void server::run()
             close(client_fd);
             continue;
         }
-        
+
         // generate new thread for each request
         string XMLrequest(buffer.data(), len);
-        clientInfo * info = new clientInfo(client_fd, client_id, XMLrequest);  //这里需要加锁吗？ 主线程delete会让其他线程崩溃
+        ClientInfo *info = new ClientInfo(client_fd, client_id, XMLrequest); //这里需要加锁吗？ 主线程delete会让其他线程崩溃
         pthread_t thread;
         pthread_create(&thread, NULL, handleRequest, info);
 
@@ -62,15 +64,22 @@ void server::run()
     }
 }
 
-void server::connectDB(string dbName, string userName, string password)
+void Server::connectDB(string dbName, string userName, string password)
 {
-    printf("connect to %s with user: %s, using password: %s\n", dbName.c_str(), userName.c_str(), password.c_str());
-    return;
+    printf("Connect to %s with User: %s, using Password: %s\n", dbName.c_str(), userName.c_str(), password.c_str());
+    C = new connection("dbname=Exchange_Server user=postgres password=passw0rd");
+    if (C->is_open()){
+        cout << "Opened database successfully: " << C->dbname() << endl;
+    }
+    else{
+        throw MyException("Can't open database.");
+    }
 }
 
- void * server::handleRequest(void *info){
-    //记得close clietn socket以及clean clientInfo
-    clientInfo* client_info = (clientInfo*) info;
+void *Server::handleRequest(void *info)
+{
+    ClientInfo *client_info = (ClientInfo *)info;
     client_info->showInfo();
     delete client_info;
- }
+    return nullptr;
+}

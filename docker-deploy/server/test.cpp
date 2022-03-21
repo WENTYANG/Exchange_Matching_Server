@@ -41,7 +41,7 @@ void parseXML(string xml)
 
 int main()
 {
-    string xml = getXMLbyString("create.txt");
+    string xml = getXMLbyString("../xml/create.txt");
     // string xml = getXMLbyString("trans.txt");
     parseXML(xml);
     return 0;

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class clientInfo
+class ClientInfo
 {
 public:
     int client_fd;
@@ -14,8 +14,9 @@ public:
     string XMLrequest;
 
 public:
-    clientInfo(int fd, int id, string request) : client_fd(fd), client_id(id), XMLrequest(request) {}
-    ~clientInfo() {
+    ClientInfo(int fd, int id, string request) : client_fd(fd), client_id(id), XMLrequest(request) {}
+    ~ClientInfo()
+    {
         close(client_fd);
     }
     void showInfo()
@@ -25,6 +26,5 @@ public:
         cout << "XMLrequest: " << XMLrequest << endl;
     }
 };
-
 
 #endif
