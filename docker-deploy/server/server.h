@@ -11,6 +11,9 @@
 #include "exception.h"
 #include "socket.h"
 #include "sql_function.h"
+#include "request.h"
+#include "parser.h"
+
 
 using namespace pqxx;
 

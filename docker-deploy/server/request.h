@@ -3,11 +3,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <cstring>
 #include <iostream>
 #include <vector>
+
 #include "exception.h"
+#include "server.h"
 #include "tinyxml2.h"
+#include "sql_function.h"
 
 #define CREATE 1
 #define TRANSACTION 0
@@ -15,34 +19,48 @@
 using namespace tinyxml2;
 using namespace std;
 
-/* ------------------------ Create Attribute ------------------------ */
-class Account {
+/* ------------------------ "CREATE" Attribute ------------------------ */
+class SubCreateRequest{
+   public:
+    virtual void execute() = 0;
+    virtual void printSubRequest() = 0;
+};
+
+class Account : public SubCreateRequest {
    public:
     int account_id;
     float balance;
+   
+   public:
     Account(int id, int balance) : account_id(id), balance(balance){};
-};
-class Share {
-   public:
-    int account_id;
-    int num;
-    Share(int id, int num) : account_id(id), num(num){};
-};
-class Symbol {
-    /* A string of symbol name and a vector of account_ids
-    and the number of shares in that account */
-   public:
-    string sym;
-    vector<Share> shares;
-    Symbol(string sym) : sym(sym){};
+    virtual void execute();
+    virtual void printSubRequest(){
+        cout << "Accounts id: " << account_id << " balance:" << balance << endl;
+    }
 };
 
-/* ------------------------ Transaction Attribute ------------------------ */
+class Symbol : public SubCreateRequest {
+   public:
+    string sym;  // symbol name
+    int account_id;
+    int num;
+   
+   public:
+    Symbol(string sym, int id, int n) : sym(sym),account_id(id), num(n){};
+    virtual void execute();
+    virtual void printSubRequest(){
+        cout << "sym: " << sym << "account_id: " << account_id << " num:" << num << endl;
+    }
+};
+
+/* ------------------------ "TRANSACTION" Attribute ------------------------ */
 class Order {
    public:
     string sym;
     int amount;
     float limit;
+   
+   public:
     Order(string sym, int amount, int limit)
         : sym(sym), amount(amount), limit(limit){};
 };
@@ -57,8 +75,14 @@ class Request {
 /* ------------------------ "CREATE" Request ------------------------ */
 class CreateRequest : public Request {
    public:
-    vector<Account> accounts;
-    vector<Symbol> symbols;
+    vector<SubCreateRequest*> subRequests;
+  
+   public:
+    CreateRequest(){};
+    ~CreateRequest(){
+        for(auto ptr:subRequests)
+            delete(ptr);
+    }
     virtual void printRequest();
     virtual void executeRequest();
 };
@@ -70,6 +94,8 @@ class TransRequest : public Request {
     vector<Order> orders;
     vector<int> queries;
     vector<int> cancels;
+   
+   public:
     virtual void printRequest();
     virtual void executeRequest();
 };

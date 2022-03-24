@@ -1,7 +1,10 @@
 #include "parser.h"
 
-// 记得parse完要delete xml doc
-/*Convert xml string to XMLDocument object(allocated memory)*/
+
+/*
+    Convert xml string to XMLDocument object(allocated memory)
+    After parsing, xmlDocument object needs to be deleted.
+*/
 XMLDocument *convert_to_file(string xml)
 {
     tinyxml2::XMLDocument *doc = new XMLDocument();
@@ -9,7 +12,10 @@ XMLDocument *convert_to_file(string xml)
     return doc;
 }
 
-/*Determine the type of request: create or transaction*/
+/*
+    Determine the type of request: create or transaction
+    return int value;
+*/
 int request_type(XMLDocument *xml)
 {
     XMLElement *root = xml->RootElement();
@@ -23,7 +29,11 @@ int request_type(XMLDocument *xml)
     }
 }
 
-// 记得parse完要delete request
+
+/*
+    parse Create type request. return Request object. This object needs to be
+    deleted manually. 
+*/
 Request *parse_create(XMLDocument *xml)
 {
     CreateRequest *request = new CreateRequest();
@@ -35,26 +45,27 @@ Request *parse_create(XMLDocument *xml)
         // const XMLAttribute* id_attr = currElem->FindAttribute("account_id")
 
         if (strcmp(currElem->Name(), "account") == 0)
-        { // Create accounts
+        {   // Create accounts
             int id = currElem->FirstAttribute()->IntValue();
             // currElem->FirstAttribute()->Next()
             int balance = currElem->FindAttribute("balance")->IntValue();
-            Account newAccount(id, balance);
-            request->accounts.push_back(newAccount);
+            Account* newAccount = new Account(id, balance);
+            request->subRequests.push_back(newAccount);
+
         }
         else if (strcmp(currElem->Name(), "symbol") == 0)
-        { // Create symbols
+        {   // Create symbols
             string sym = currElem->FirstAttribute()->Value();
-            Symbol symbol(sym);
+            Symbol* symbol = new Symbol(sym);
             XMLElement *currAcount = currElem->FirstChildElement();
             while (currAcount)
             {
                 int id = currAcount->FirstAttribute()->IntValue();
                 int num = atoi(currAcount->GetText());
-                symbol.shares.push_back(Share(id, num));
+                symbol->shares.push_back(Symbol::Share(id, num));
                 currAcount = currAcount->NextSiblingElement();
             }
-            request->symbols.push_back(symbol);
+            request->subRequests.push_back(symbol);
         }
 
         currElem = currElem->NextSiblingElement();
@@ -62,7 +73,11 @@ Request *parse_create(XMLDocument *xml)
     return request;
 }
 
-// 记得parse完要delete request
+
+/*
+    parse Transaction type request. return Request object. This object needs to be
+    deleted manually. 
+*/
 Request *parse_trans(XMLDocument *xml)
 {
     TransRequest *request = new TransRequest();

@@ -1,43 +1,50 @@
 #include "request.h"
 
-void CreateRequest::executeRequest() {}
-void TransRequest::executeRequest() {}
-
-void CreateRequest::printRequest()
-{
-    cout << "CreateRequest" << endl;
-    cout << "Accounts" << endl;
-    for (auto a : accounts)
-    {
-        cout << "id: " << a.account_id << " balance:" << a.balance << endl;
-    }
-    cout << "Symbols" << endl;
-    for (auto s : symbols)
-    {
-        cout << "sym: " << s.sym << endl;
-        for (auto sh : s.shares)
-        {
-            cout << "id: " << sh.account_id << " num:" << sh.num << endl;
-        }
+void CreateRequest::printRequest() {
+    for (auto ptr : subRequests) {
+        ptr->printSubRequest();
     }
 }
-void TransRequest::printRequest()
-{
+
+void TransRequest::printRequest() {
     cout << "TransRequest" << endl;
     cout << "Orders" << endl;
-    for (auto o : orders)
-    {
+    for (auto o : orders) {
         cout << "sym: " << o.sym << " amount:" << o.amount
              << " limit:" << o.limit << endl;
     }
     cout << "Queries" << endl;
-    for (auto q : queries)
-    {
+    for (auto q : queries) {
         cout << q << endl;
     }
     cout << "Cancels" << endl;
-    for (auto c : cancels)
-    {
+    for (auto c : cancels) {
         cout << c << endl;
     }
 }
+
+void Account::execute() { addAccount(C, account_id, balance); }
+
+void Symbol::execute() { addSymbol(C, sym, account_id, num); }
+
+void CreateRequest::executeRequest() {
+    for (SubCreateRequest* ptr : subRequests) {
+        try {
+            ptr->execute();
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << '\n';
+            // TODO: add error info to response;怎么传出去？
+            continue;
+        }
+        // record success.
+    }
+}
+void TransRequest::executeRequest() {}
+
+/*
+TODO:
+    1. 完成在sql_function.cpp中的addAccount(), addSymbol();
+    2. 通过exception抛出报错信息，并存储在response中  外层用引用传进来 vector<string> responses ?
+    http://pqxx.org/development/libpqxx/
+    3. 修改了Symbol类，对应调整parser.cpp
+*/

@@ -70,7 +70,34 @@ void Server::connectDB(string dbName, string userName, string password) {
 
 void* Server::handleRequest(void* info) {
     ClientInfo* client_info = (ClientInfo*)info;
-    client_info->showInfo();
+
+    // parse request
+    unique_ptr<Request> r(nullptr);
+    try {
+        unique_ptr<XMLDocument> xml(convert_to_file(client_info->XMLrequest));  
+        int type = request_type(xml.get());
+        if (type == CREATE) {
+            unique_ptr<Request>temp_r(parse_create(xml.get()));
+            r = std::move(temp_r);
+        }
+        else if(type == TRANSACTION){
+            unique_ptr<Request>temp_r(parse_trans(xml.get()));
+            r = std::move(temp_r);
+        }
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
+        delete client_info;
+        return nullptr;
+    }
+
+    // execute request
+    r->executeRequest();
+
+
+
+
+
+
     delete client_info;
     return nullptr;
 }

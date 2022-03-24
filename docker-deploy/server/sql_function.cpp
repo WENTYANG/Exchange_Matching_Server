@@ -34,3 +34,17 @@ void dropAllTable(connection* C) {
     W.commit();
     cout << "Drop all the existed table" << endl;
 }
+
+/*
+    insert a row into table Account. This function will throw exception when it fails.
+*/
+void addAccount(connection* C, int account_id, float balance){
+    /*TODO*/
+}
+
+/*
+    insert a row into table Symbol. This function will throw exception when it fails.
+*/
+void addSymbol(connection*C, const string& sym, int account_id, int num){
+    /*TODO*/
+}
