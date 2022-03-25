@@ -3,6 +3,7 @@
 #include "parser.h"
 #include "request.h"
 #include "server.h"
+#include "sql_function.h"
 
 string getXMLbyString(string name) {
     string line, xml;
@@ -31,10 +32,33 @@ void parseXML(string xml) {
     delete (doc);
 }
 
+Request* getParsed(string xml) {
+    XMLDocument* doc = convert_to_file(xml);
+    int type = request_type(doc);
+    Request* req = nullptr;
+    if (type == TRANSACTION) {
+        req = parse_trans(doc);
+    } else if (type == CREATE) {
+        req = parse_create(doc);
+    }
+    delete doc;
+    return req;
+}
+
 int main() {
-    // string xml = getXMLbyString("../xml/create.txt");
-    string xml = getXMLbyString("../xml/trans.txt");
-    parseXML(xml);
+    Server s("12345");
+    s.connectDB("exchange_server", "postgres", "passw0rd");
+    // addAccount(C, 1, 100);
+    // addAccount(C, 2, 200);
+    // addSymbol(C, "Duke", 1, 10);
+    // addSymbol(C, "Duke", 1, 10);
+    // addSymbol(C, "Duke", 2, 10);
+
+    string xml = getXMLbyString("../xml/create.txt");
+    // string xml = getXMLbyString("../xml/trans.txt");
+    Request* req = getParsed(xml);
+    req->executeRequest();
+    req->saveResponse();
     return 0;
 }
 

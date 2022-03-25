@@ -1,12 +1,20 @@
 <create> 
-  <account id="123" balance="200"/>
+  <account id="1" balance="200"/>
+  <account id="2" balance="200"/>
+  <account id="3" balance="200"/>
+  <account id="4" balance="200"/>
+  <account id="5" balance="200"/>
+  <account id="1" balance="200"/>
+  <account id="2" balance="200"/>
   <symbol sym="Duke">
     <account id="1">100</account>
     <account id="2">200</account>
     <account id="3">300</account>
+    <account id="3">300</account>
   </symbol>
   <symbol sym="USA">
     <account id="4">400</account>
+    <account id="5">500</account>
     <account id="5">500</account>
     <account id="6">600</account>
   </symbol>

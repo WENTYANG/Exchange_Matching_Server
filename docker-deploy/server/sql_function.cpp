@@ -27,7 +27,7 @@ void createTable(connection* C, string fileName) {
 void dropAllTable(connection* C) {
     work W(*C);
     string sql =
-        "DROP TABLE IF EXISTS account;DROP TABLE IF EXISTS symbol;DROP TABLE "
+        "DROP TABLE IF EXISTS symbol;DROP TABLE IF EXISTS account;DROP TABLE "
         "IF EXISTS orders;";
 
     W.exec(sql);
@@ -49,9 +49,10 @@ void addAccount(connection* C, int account_id, float balance) {
 }
 
 /*
-    insert a row into table Symbol. This function will throw exception when it
-    fails.
-*/
+    Insert a new row into table Symbol. If account does not exist, it will fail
+   and throw exception. If the SYM already exist in this account, it will update
+   the old value.
+   */
 void addSymbol(connection* C, const string& sym, int account_id, int num) {
     /*
     Attribute "id"="account_id" 可能setattribute的时候要转成str
@@ -59,7 +60,11 @@ void addSymbol(connection* C, const string& sym, int account_id, int num) {
     work W(*C);
     stringstream sql;
     sql << "INSERT INTO SYMBOL(ACCOUNT_ID, SYM, AMOUNT) VALUES(" << account_id
-        << "," << W.quote(sym) << "," << num << ");";
+        << "," << W.quote(sym) << "," << num
+        << ") ON CONFLICT ON CONSTRAINT symbol_pk DO UPDATE SET AMOUNT = "
+        << num << "+"
+        << "SYMBOL.AMOUNT"
+        << ";";
     W.exec(sql.str());
     W.commit();
 }

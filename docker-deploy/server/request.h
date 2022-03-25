@@ -88,6 +88,12 @@ class Request {
         XMLElement* root = response.NewElement("results");
         response.InsertEndChild(root);
     }
+
+    // for test
+    virtual void saveResponse() {
+        response.SaveFile("response.xml");
+        response.Print();
+    }
 };
 
 /* ------------------------ "CREATE" Request ------------------------ */

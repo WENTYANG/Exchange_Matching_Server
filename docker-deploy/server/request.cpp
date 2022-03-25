@@ -107,11 +107,9 @@ void TransRequest::executeRequest() {}
 
 /*
 TODO:
-    1. sql_function.cpp中的 addSymbol() 账户存在时，update symbol。
-    atomic sql完成 或者 read-write(加一个version列)
-    卖的时候不删除，amount改成0.
-    2. test
+    1.exception描述文本可否简短，只保留error，去掉detail
+    2.设计和写transaction
 
-
-
+    更新：symbol表以sym，account_id作为复合主键，以便探测on conflict更新
+    test完成
 */
