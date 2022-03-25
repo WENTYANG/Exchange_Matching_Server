@@ -9,9 +9,9 @@
 using namespace std;
 using namespace pqxx;
 
-void creatTable(connection* C, const string& fileName);
+void createTable(connection* C, const string fileName);
 void dropAllTable(connection* C);
 void addAccount(connection* C, int account_id, float balance);
-void addSymbol(connection*C, const string& sym, int account_id, int num)
+void addSymbol(connection* C, const string& sym, int account_id, int num);
 
 #endif

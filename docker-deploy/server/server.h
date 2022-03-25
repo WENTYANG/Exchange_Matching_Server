@@ -9,11 +9,10 @@
 #include <vector>
 #include "clientInfo.h"
 #include "exception.h"
+#include "parser.h"
+#include "request.h"
 #include "socket.h"
 #include "sql_function.h"
-#include "request.h"
-#include "parser.h"
-
 
 using namespace pqxx;
 
@@ -25,7 +24,7 @@ class Server {
 
    public:
     Server(string port) : portNum(port) {}
-    ~Server(){};
+    ~Server() {}
     void run();
     void connectDB(string dbName, string userName, string password);
     static void* handleRequest(void* info);

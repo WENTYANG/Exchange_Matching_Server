@@ -2,8 +2,6 @@
 
 #define MAX_LENGTH 65536
 
-using namespace std;
-
 connection* C;
 
 void Server::run() {
@@ -65,7 +63,7 @@ void Server::connectDB(string dbName, string userName, string password) {
 
     dropAllTable(C);
 
-    creatTable(C, "../sql/table.sql");
+    createTable(C, "../sql/table.sql");
 }
 
 void* Server::handleRequest(void* info) {
@@ -74,14 +72,13 @@ void* Server::handleRequest(void* info) {
     // parse request
     unique_ptr<Request> r(nullptr);
     try {
-        unique_ptr<XMLDocument> xml(convert_to_file(client_info->XMLrequest));  
+        unique_ptr<XMLDocument> xml(convert_to_file(client_info->XMLrequest));
         int type = request_type(xml.get());
         if (type == CREATE) {
-            unique_ptr<Request>temp_r(parse_create(xml.get()));
+            unique_ptr<Request> temp_r(parse_create(xml.get()));
             r = std::move(temp_r);
-        }
-        else if(type == TRANSACTION){
-            unique_ptr<Request>temp_r(parse_trans(xml.get()));
+        } else if (type == TRANSACTION) {
+            unique_ptr<Request> temp_r(parse_trans(xml.get()));
             r = std::move(temp_r);
         }
     } catch (const std::exception& e) {
@@ -92,11 +89,6 @@ void* Server::handleRequest(void* info) {
 
     // execute request
     r->executeRequest();
-
-
-
-
-
 
     delete client_info;
     return nullptr;

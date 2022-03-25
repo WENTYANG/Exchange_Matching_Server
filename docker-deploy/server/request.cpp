@@ -1,4 +1,5 @@
 #include "request.h"
+#include "server.h"
 
 void CreateRequest::printRequest() {
     for (auto ptr : subRequests) {
@@ -23,9 +24,13 @@ void TransRequest::printRequest() {
     }
 }
 
-void Account::execute() { addAccount(C, account_id, balance); }
+void Account::execute() {
+    addAccount(C, account_id, balance);
+}
 
-void Symbol::execute() { addSymbol(C, sym, account_id, num); }
+void Symbol::execute() {
+    addSymbol(C, sym, account_id, num);
+}
 
 void CreateRequest::executeRequest() {
     for (SubCreateRequest* ptr : subRequests) {
@@ -44,7 +49,7 @@ void TransRequest::executeRequest() {}
 /*
 TODO:
     1. 完成在sql_function.cpp中的addAccount(), addSymbol();
-    2. 通过exception抛出报错信息，并存储在response中  外层用引用传进来 vector<string> responses ?
-    http://pqxx.org/development/libpqxx/
+    2. 通过exception抛出报错信息，并存储在response中  外层用引用传进来
+vector<string> responses ? http://pqxx.org/development/libpqxx/
     3. 修改了Symbol类，对应调整parser.cpp
 */

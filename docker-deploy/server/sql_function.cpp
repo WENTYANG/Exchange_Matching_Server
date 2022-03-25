@@ -5,7 +5,7 @@
     read sql command from the file and then create tabel using connection *C.
     If fails, it will throw exception.
 */
-void creatTable(connection* C, string fileName) {
+void createTable(connection* C, string fileName) {
     string sql;
     ifstream ifs(fileName.c_str(), ifstream::in);
     if (ifs.is_open() == true) {
@@ -36,15 +36,17 @@ void dropAllTable(connection* C) {
 }
 
 /*
-    insert a row into table Account. This function will throw exception when it fails.
+    insert a row into table Account. This function will throw exception when it
+   fails.
 */
-void addAccount(connection* C, int account_id, float balance){
+void addAccount(connection* C, int account_id, float balance) {
     /*TODO*/
 }
 
 /*
-    insert a row into table Symbol. This function will throw exception when it fails.
+    insert a row into table Symbol. This function will throw exception when it
+   fails.
 */
-void addSymbol(connection*C, const string& sym, int account_id, int num){
+void addSymbol(connection* C, const string& sym, int account_id, int num) {
     /*TODO*/
 }
