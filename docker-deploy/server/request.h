@@ -21,7 +21,7 @@ using namespace tinyxml2;
 /* ------------------------ "CREATE" Attribute ------------------------ */
 class SubCreateRequest {
    public:
-    virtual void execute() = 0;
+    virtual void execute(XMLDocument& response) = 0;
     virtual void printSubRequest() = 0;
 };
 
@@ -32,7 +32,7 @@ class Account : public SubCreateRequest {
 
    public:
     Account(int id, int balance) : account_id(id), balance(balance) {}
-    virtual void execute();
+    virtual void execute(XMLDocument& response);
     virtual void printSubRequest() {
         cout << "Accounts id: " << account_id << " balance:" << balance << endl;
     };
@@ -46,7 +46,7 @@ class Symbol : public SubCreateRequest {
 
    public:
     Symbol(string sym, int id, int n) : sym(sym), account_id(id), num(n) {}
-    virtual void execute();
+    virtual void execute(XMLDocument& response);
     virtual void printSubRequest() {
         cout << "sym: " << sym << " account_id: " << account_id
              << " num:" << num << endl;
@@ -76,9 +76,16 @@ class Request {
 class CreateRequest : public Request {
    public:
     vector<SubCreateRequest*> subRequests;
-
-   public:
-    CreateRequest() {}
+    XMLDocument response;
+    CreateRequest() {
+        // Add declaration for response xml (e.g. <?xml version="1.0"
+        // encoding="utf-8" standalone="yes" ?>)
+        tinyxml2::XMLDeclaration* declaration = response.NewDeclaration();
+        response.InsertFirstChild(declaration);
+        // Create root element:<results></results>
+        XMLElement* root = response.NewElement("results");
+        response.InsertEndChild(root);
+    }
     ~CreateRequest() {
         for (auto ptr : subRequests)
             delete (ptr);

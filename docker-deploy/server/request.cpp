@@ -24,18 +24,18 @@ void TransRequest::printRequest() {
     }
 }
 
-void Account::execute() {
-    addAccount(C, account_id, balance);
+void Account::execute(XMLDocument& response) {
+    addAccount(C, account_id, balance, response);
 }
 
-void Symbol::execute() {
-    addSymbol(C, sym, account_id, num);
+void Symbol::execute(XMLDocument& response) {
+    addSymbol(C, sym, account_id, num, response);
 }
 
 void CreateRequest::executeRequest() {
     for (SubCreateRequest* ptr : subRequests) {
         try {
-            ptr->execute();
+            ptr->execute(response);
         } catch (const std::exception& e) {
             std::cerr << e.what() << '\n';
             // TODO: add error info to response;怎么传出去？

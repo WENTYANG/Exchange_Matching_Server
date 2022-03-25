@@ -16,9 +16,9 @@ XMLDocument* convert_to_file(string xml) {
 */
 int request_type(XMLDocument* xml) {
     XMLElement* root = xml->RootElement();
-    if (root == nullptr) {
-        cout << "NULL!" << endl;
-    }
+    // if (root == nullptr) {
+    //     cout << "NULL!" << endl;
+    // }
     if (strcmp(root->Name(), "create") == 0)
         return CREATE;
     else if (strcmp(root->Name(), "transactions") == 0)
