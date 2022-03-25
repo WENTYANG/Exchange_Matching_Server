@@ -23,6 +23,8 @@ class SubCreateRequest {
    public:
     virtual void execute(XMLDocument& response) = 0;
     virtual void printSubRequest() = 0;
+    virtual void reportSuccess(XMLDocument& response) = 0;
+    virtual void reportError(XMLDocument& response, string msg) = 0;
 };
 
 class Account : public SubCreateRequest {
@@ -33,6 +35,8 @@ class Account : public SubCreateRequest {
    public:
     Account(int id, int balance) : account_id(id), balance(balance) {}
     virtual void execute(XMLDocument& response);
+    virtual void reportSuccess(XMLDocument& response);
+    virtual void reportError(XMLDocument& response, string msg);
     virtual void printSubRequest() {
         cout << "Accounts id: " << account_id << " balance:" << balance << endl;
     };
@@ -47,6 +51,8 @@ class Symbol : public SubCreateRequest {
    public:
     Symbol(string sym, int id, int n) : sym(sym), account_id(id), num(n) {}
     virtual void execute(XMLDocument& response);
+    virtual void reportSuccess(XMLDocument& response);
+    virtual void reportError(XMLDocument& response, string msg);
     virtual void printSubRequest() {
         cout << "sym: " << sym << " account_id: " << account_id
              << " num:" << num << endl;
@@ -68,16 +74,12 @@ class Order {
 /* ------------------------ Abstract Request ------------------------ */
 class Request {
    public:
+    XMLDocument response;
+
+   public:
     virtual void printRequest() = 0;
     virtual void executeRequest() = 0;
-};
-
-/* ------------------------ "CREATE" Request ------------------------ */
-class CreateRequest : public Request {
-   public:
-    vector<SubCreateRequest*> subRequests;
-    XMLDocument response;
-    CreateRequest() {
+    Request() {
         // Add declaration for response xml (e.g. <?xml version="1.0"
         // encoding="utf-8" standalone="yes" ?>)
         tinyxml2::XMLDeclaration* declaration = response.NewDeclaration();
@@ -86,6 +88,14 @@ class CreateRequest : public Request {
         XMLElement* root = response.NewElement("results");
         response.InsertEndChild(root);
     }
+};
+
+/* ------------------------ "CREATE" Request ------------------------ */
+class CreateRequest : public Request {
+   public:
+    vector<SubCreateRequest*> subRequests;
+
+    CreateRequest() {}
     ~CreateRequest() {
         for (auto ptr : subRequests)
             delete (ptr);

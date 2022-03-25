@@ -54,8 +54,8 @@ Request* parse_create(XMLDocument* xml) {
                 int id = currAcount->FirstAttribute()->IntValue();
                 int num = atoi(currAcount->GetText());
                 Symbol* symbol = new Symbol(sym, id, num);
-                currAcount = currAcount->NextSiblingElement();
                 request->subRequests.push_back(symbol);
+                currAcount = currAcount->NextSiblingElement();
             }
         }
         currElem = currElem->NextSiblingElement();
@@ -65,7 +65,7 @@ Request* parse_create(XMLDocument* xml) {
 
 /*
     parse Transaction type request. return Request object. This object needs to
-   be deleted manually.
+    be deleted manually.
 */
 Request* parse_trans(XMLDocument* xml) {
     TransRequest* request = new TransRequest();

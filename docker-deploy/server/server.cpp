@@ -90,6 +90,8 @@ void* Server::handleRequest(void* info) {
     // execute request
     r->executeRequest();
 
+    // send back response
+
     delete client_info;
     return nullptr;
 }
