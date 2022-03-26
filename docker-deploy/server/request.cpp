@@ -1,28 +1,8 @@
 #include "request.h"
+
 #include "server.h"
 
-void CreateRequest::printRequest() {
-    for (auto ptr : subRequests) {
-        ptr->printSubRequest();
-    }
-}
 
-void TransRequest::printRequest() {
-    cout << "TransRequest" << endl;
-    cout << "Orders" << endl;
-    for (auto o : orders) {
-        cout << "sym: " << o.sym << " amount:" << o.amount
-             << " limit:" << o.limit << endl;
-    }
-    cout << "Queries" << endl;
-    for (auto q : queries) {
-        cout << q << endl;
-    }
-    cout << "Cancels" << endl;
-    for (auto c : cancels) {
-        cout << c << endl;
-    }
-}
 
 void Account::execute(XMLDocument& response) {
     try {
@@ -97,19 +77,4 @@ void Symbol::reportError(XMLDocument& response, string msg) {
     root->InsertEndChild(error);
 }
 
-void CreateRequest::executeRequest() {
-    for (SubCreateRequest* ptr : subRequests) {
-        ptr->execute(response);
-    }
-}
 
-void TransRequest::executeRequest() {}
-
-/*
-TODO:
-    1.exception描述文本可否简短，只保留error，去掉detail
-    2.设计和写transaction
-
-    更新：symbol表以sym，account_id作为复合主键，以便探测on conflict更新
-    test完成
-*/

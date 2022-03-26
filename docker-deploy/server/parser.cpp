@@ -77,16 +77,18 @@ Request* parse_trans(XMLDocument* xml) {
             string sym = currElem->FirstAttribute()->Value();
             int amount = currElem->FindAttribute("amount")->IntValue();
             int limit = currElem->FindAttribute("limit")->IntValue();
-            Order order(sym, amount, limit);
-            request->orders.push_back(order);
+            Order* order = new Order(sym, amount, limit);
+            request->subRequests.push_back(order);
         }
         if (strcmp(currElem->Name(), "query") == 0) {
             int trans_id = currElem->FirstAttribute()->IntValue();
-            request->queries.push_back(trans_id);
+            Query* query = new Query(trans_id);
+            request->subRequests.push_back(query);
         }
         if (strcmp(currElem->Name(), "cancel") == 0) {
             int trans_id = currElem->FirstAttribute()->IntValue();
-            request->cancels.push_back(trans_id);
+            Cancel* cancel = new Cancel(trans_id);
+            request->subRequests.push_back(cancel);
         }
         currElem = currElem->NextSiblingElement();
     }

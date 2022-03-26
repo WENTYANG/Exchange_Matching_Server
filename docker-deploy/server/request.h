@@ -1,9 +1,8 @@
 #ifndef _REQUEST_H
 #define _REQUEST_H
 
-#include <stdio.h>
-#include <stdlib.h>
-
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <vector>
@@ -18,8 +17,8 @@
 using namespace std;
 using namespace tinyxml2;
 
-/* ------------------------ "CREATE" Attribute ------------------------ */
-class SubCreateRequest {
+/* ------------------------ Abstract Request ------------------------ */
+class SubRequest {
    public:
     virtual void execute(XMLDocument& response) = 0;
     virtual void printSubRequest() = 0;
@@ -27,7 +26,44 @@ class SubCreateRequest {
     virtual void reportError(XMLDocument& response, string msg) = 0;
 };
 
-class Account : public SubCreateRequest {
+class Request {
+   public:
+    XMLDocument response;
+    vector<SubRequest*> subRequests;
+
+   public:
+    virtual void printRequest() {
+        for (auto ptr : subRequests) {
+            ptr->printSubRequest();
+        }
+    }
+    virtual void executeRequest() {
+        for (SubRequest* ptr : subRequests) {
+            ptr->execute(response);
+        }
+    };
+    Request() {
+        // Add declaration for response xml (e.g. <?xml version="1.0"
+        // encoding="utf-8" standalone="yes" ?>)
+        tinyxml2::XMLDeclaration* declaration = response.NewDeclaration();
+        response.InsertFirstChild(declaration);
+        // Create root element:<results></results>
+        XMLElement* root = response.NewElement("results");
+        response.InsertEndChild(root);
+    }
+    ~Request() {
+        for (auto ptr : subRequests) delete (ptr);
+    }
+
+    // for test
+    virtual void saveResponse() {
+        response.SaveFile("response.xml");
+        response.Print();
+    }
+};
+
+/* ------------------------ "CREATE" Attribute ------------------------ */
+class Account : public SubRequest {
    public:
     int account_id;
     float balance;
@@ -42,7 +78,7 @@ class Account : public SubCreateRequest {
     };
 };
 
-class Symbol : public SubCreateRequest {
+class Symbol : public SubRequest {
    public:
     string sym;  // symbol name
     int account_id;
@@ -60,7 +96,7 @@ class Symbol : public SubCreateRequest {
 };
 
 /* ------------------------ "TRANSACTION" Attribute ------------------------ */
-class Order {
+class Order : public SubRequest {
    public:
     string sym;
     int amount;
@@ -69,58 +105,53 @@ class Order {
    public:
     Order(string sym, int amount, int limit)
         : sym(sym), amount(amount), limit(limit) {}
+    virtual void execute(XMLDocument& response);
+    virtual void printSubRequest() {
+        cout << "Order:" << endl;
+        cout << "sym: " << sym << " amount:" << amount << " limit:" << limit
+             << endl;
+    }
+    virtual void reportSuccess(XMLDocument& response);
+    virtual void reportError(XMLDocument& response, string msg);
 };
 
-/* ------------------------ Abstract Request ------------------------ */
-class Request {
+class Query : public SubRequest {
    public:
-    XMLDocument response;
+    int trans_id;
 
    public:
-    virtual void printRequest() = 0;
-    virtual void executeRequest() = 0;
-    Request() {
-        // Add declaration for response xml (e.g. <?xml version="1.0"
-        // encoding="utf-8" standalone="yes" ?>)
-        tinyxml2::XMLDeclaration* declaration = response.NewDeclaration();
-        response.InsertFirstChild(declaration);
-        // Create root element:<results></results>
-        XMLElement* root = response.NewElement("results");
-        response.InsertEndChild(root);
+    Query(int id) : trans_id(id) {}
+    virtual void execute(XMLDocument& response);
+    virtual void printSubRequest(){
+        cout << "Query:" << endl;
+        cout << trans_id << endl;
     }
+    virtual void reportSuccess(XMLDocument& response);
+    virtual void reportError(XMLDocument& response, string msg);
+};
 
-    // for test
-    virtual void saveResponse() {
-        response.SaveFile("response.xml");
-        response.Print();
+class Cancel : public SubRequest {
+   public:
+    int trans_id;
+
+   public:
+    Cancel(int id) : trans_id(id) {}
+    virtual void execute(XMLDocument& response);
+    virtual void printSubRequest(){
+        cout << "Cancel:" << endl;
+        cout << trans_id << endl;
     }
+    virtual void reportSuccess(XMLDocument& response);
+    virtual void reportError(XMLDocument& response, string msg);
 };
 
 /* ------------------------ "CREATE" Request ------------------------ */
-class CreateRequest : public Request {
-   public:
-    vector<SubCreateRequest*> subRequests;
-
-    CreateRequest() {}
-    ~CreateRequest() {
-        for (auto ptr : subRequests)
-            delete (ptr);
-    }
-    virtual void printRequest();
-    virtual void executeRequest();
-};
+class CreateRequest : public Request {};
 
 /* ------------------------ "TRANSACTION" Request ------------------------ */
 class TransRequest : public Request {
    public:
     int account_id;
-    vector<Order> orders;
-    vector<int> queries;
-    vector<int> cancels;
-
-   public:
-    virtual void printRequest();
-    virtual void executeRequest();
 };
 
 #endif
