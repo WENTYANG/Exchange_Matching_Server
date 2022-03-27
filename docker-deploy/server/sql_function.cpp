@@ -1,4 +1,5 @@
 #include "sql_function.h"
+
 #include "exception.h"
 
 /*
@@ -10,8 +11,7 @@ void createTable(connection* C, string fileName) {
     ifstream ifs(fileName.c_str(), ifstream::in);
     if (ifs.is_open() == true) {
         string line;
-        while (getline(ifs, line))
-            sql.append(line);
+        while (getline(ifs, line)) sql.append(line);
     } else {
         throw MyException("fail to open file.");
     }
@@ -68,3 +68,23 @@ void addSymbol(connection* C, const string& sym, int account_id, int num) {
     W.exec(sql.str());
     W.commit();
 }
+
+/*
+    if current order is a sell order, get all buy orders for the same
+   symbol.(price descending sort) if current order is a buy order, get all sell
+   orders for the same symbol.(price descending sort) this function will set all
+   the eligible orders into lock status(RWlock).
+*/
+result getEligibleOrders(connection* C, const string& sym, float limit) {}
+
+/*
+    insert an order into Order table
+*/
+void addOrder(connection* C, const string& sym, int amount, float limit,
+              int account_id) {}
+
+/*
+    reduce the monry or symbol from the corresponding account based on order info.
+*/
+void reduceMoneyOrSymbol(connection* C, const string& sym, int account_id,
+                         int amount, float limit) {}

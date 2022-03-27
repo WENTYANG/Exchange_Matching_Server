@@ -5,6 +5,7 @@
 #include <iostream>
 #include <pqxx/pqxx>
 #include <string>
+
 #include "tinyxml2.h"
 
 using namespace std;
@@ -15,5 +16,10 @@ void createTable(connection* C, const string fileName);
 void dropAllTable(connection* C);
 void addAccount(connection* C, int account_id, float balance);
 void addSymbol(connection* C, const string& sym, int account_id, int num);
+result getEligibleOrders(connection* C, const string& sym, float limit);
+void addOrder(connection* C, const string& sym, int amount, float limit,
+              int account_id);
+void reduceMoneyOrSymbol(connection* C, const string& sym, int account_id,
+                         int amount, float limit);
 
 #endif

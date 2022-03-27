@@ -70,24 +70,24 @@ Request* parse_create(XMLDocument* xml) {
 Request* parse_trans(XMLDocument* xml) {
     TransRequest* request = new TransRequest();
     XMLElement* root = xml->RootElement();
-    request->account_id = root->FirstAttribute()->IntValue();
+    int account_id = root->FirstAttribute()->IntValue();
     XMLElement* currElem = root->FirstChildElement();
     while (currElem) {
         if (strcmp(currElem->Name(), "order") == 0) {
             string sym = currElem->FirstAttribute()->Value();
             int amount = currElem->FindAttribute("amount")->IntValue();
             int limit = currElem->FindAttribute("limit")->IntValue();
-            Order* order = new Order(sym, amount, limit);
+            Order* order = new Order(account_id, sym, amount, limit);
             request->subRequests.push_back(order);
         }
         if (strcmp(currElem->Name(), "query") == 0) {
             int trans_id = currElem->FirstAttribute()->IntValue();
-            Query* query = new Query(trans_id);
+            Query* query = new Query(account_id, trans_id);
             request->subRequests.push_back(query);
         }
         if (strcmp(currElem->Name(), "cancel") == 0) {
             int trans_id = currElem->FirstAttribute()->IntValue();
-            Cancel* cancel = new Cancel(trans_id);
+            Cancel* cancel = new Cancel(account_id, trans_id);
             request->subRequests.push_back(cancel);
         }
         currElem = currElem->NextSiblingElement();

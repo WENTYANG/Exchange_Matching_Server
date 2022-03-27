@@ -20,6 +20,11 @@ using namespace tinyxml2;
 /* ------------------------ Abstract Request ------------------------ */
 class SubRequest {
    public:
+    int account_id;
+
+   public:
+    SubRequest(int id) : account_id(id) {}
+    virtual ~SubRequest(){};
     virtual void execute(XMLDocument& response) = 0;
     virtual void printSubRequest() = 0;
     virtual void reportSuccess(XMLDocument& response) = 0;
@@ -41,7 +46,7 @@ class Request {
         for (SubRequest* ptr : subRequests) {
             ptr->execute(response);
         }
-    };
+    }
     Request() {
         // Add declaration for response xml (e.g. <?xml version="1.0"
         // encoding="utf-8" standalone="yes" ?>)
@@ -51,7 +56,7 @@ class Request {
         XMLElement* root = response.NewElement("results");
         response.InsertEndChild(root);
     }
-    ~Request() {
+    virtual ~Request() {
         for (auto ptr : subRequests) delete (ptr);
     }
 
@@ -65,11 +70,10 @@ class Request {
 /* ------------------------ "CREATE" Attribute ------------------------ */
 class Account : public SubRequest {
    public:
-    int account_id;
     float balance;
 
    public:
-    Account(int id, int balance) : account_id(id), balance(balance) {}
+    Account(int id, int balance) : SubRequest(id), balance(balance) {}
     virtual void execute(XMLDocument& response);
     virtual void reportSuccess(XMLDocument& response);
     virtual void reportError(XMLDocument& response, string msg);
@@ -81,11 +85,10 @@ class Account : public SubRequest {
 class Symbol : public SubRequest {
    public:
     string sym;  // symbol name
-    int account_id;
     int num;
 
    public:
-    Symbol(string sym, int id, int n) : sym(sym), account_id(id), num(n) {}
+    Symbol(string sym, int id, int n) : SubRequest(id), sym(sym), num(n) {}
     virtual void execute(XMLDocument& response);
     virtual void reportSuccess(XMLDocument& response);
     virtual void reportError(XMLDocument& response, string msg);
@@ -103,8 +106,8 @@ class Order : public SubRequest {
     float limit;
 
    public:
-    Order(string sym, int amount, int limit)
-        : sym(sym), amount(amount), limit(limit) {}
+    Order(int id, string sym, int amount, int limit)
+        : SubRequest(id), sym(sym), amount(amount), limit(limit) {}
     virtual void execute(XMLDocument& response);
     virtual void printSubRequest() {
         cout << "Order:" << endl;
@@ -113,6 +116,9 @@ class Order : public SubRequest {
     }
     virtual void reportSuccess(XMLDocument& response);
     virtual void reportError(XMLDocument& response, string msg);
+
+   private:
+    bool isValid(){return true;}
 };
 
 class Query : public SubRequest {
@@ -120,9 +126,10 @@ class Query : public SubRequest {
     int trans_id;
 
    public:
-    Query(int id) : trans_id(id) {}
+    Query(int accountID, int transId)
+        : SubRequest(accountID), trans_id(transId) {}
     virtual void execute(XMLDocument& response);
-    virtual void printSubRequest(){
+    virtual void printSubRequest() {
         cout << "Query:" << endl;
         cout << trans_id << endl;
     }
@@ -135,9 +142,10 @@ class Cancel : public SubRequest {
     int trans_id;
 
    public:
-    Cancel(int id) : trans_id(id) {}
+    Cancel(int accountID, int transId)
+        : SubRequest(accountID), trans_id(transId) {}
     virtual void execute(XMLDocument& response);
-    virtual void printSubRequest(){
+    virtual void printSubRequest() {
         cout << "Cancel:" << endl;
         cout << trans_id << endl;
     }
@@ -149,9 +157,6 @@ class Cancel : public SubRequest {
 class CreateRequest : public Request {};
 
 /* ------------------------ "TRANSACTION" Request ------------------------ */
-class TransRequest : public Request {
-   public:
-    int account_id;
-};
+class TransRequest : public Request {};
 
 #endif
