@@ -76,7 +76,7 @@ Request* parse_trans(XMLDocument* xml) {
         if (strcmp(currElem->Name(), "order") == 0) {
             string sym = currElem->FirstAttribute()->Value();
             int amount = currElem->FindAttribute("amount")->IntValue();
-            int limit = currElem->FindAttribute("limit")->IntValue();
+            int limit = currElem->FindAttribute("limit")->FloatValue();
             Order* order = new Order(account_id, sym, amount, limit);
             request->subRequests.push_back(order);
         }

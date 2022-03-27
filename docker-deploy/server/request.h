@@ -57,7 +57,8 @@ class Request {
         response.InsertEndChild(root);
     }
     virtual ~Request() {
-        for (auto ptr : subRequests) delete (ptr);
+        for (auto ptr : subRequests)
+            delete (ptr);
     }
 
     // for test
@@ -118,7 +119,7 @@ class Order : public SubRequest {
     virtual void reportError(XMLDocument& response, string msg);
 
    private:
-    bool isValid(){return true;}
+    bool isValid();
 };
 
 class Query : public SubRequest {
