@@ -98,10 +98,9 @@ void Order::execute(XMLDocument& response) {
     for (auto const& order : list) {
         float o_limit = order[4].as<float>();
         int o_version = order[7].as<int>();
-        string o_sym = order[2].as<string>();
         int o_amount = order[3].as<int>();
         int o_account_id = order[1].as<int>();
-
+        string o_sym = order[2].as<string>();
 
         if (amount > 0) {                  // buy order
             if (limit - o_limit > 1e-6) {  // match successfully
@@ -116,7 +115,6 @@ void Order::execute(XMLDocument& response) {
                 break;
             }
         }
-
         if (amount == 0) {  //当前订单恰好全部交易完成，不用继续后续匹配
             break;
         }

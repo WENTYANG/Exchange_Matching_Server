@@ -141,3 +141,23 @@ void reduceMoneyOrSymbol(connection* C,
     W.exec(sql.str());
     W.commit();
 }
+
+/*
+    set the whole OPEN order EXECUTED. This function will throw exception if order version
+    is changed.
+*/
+void setOrderExecuted(connection* C, const string& o_sym, int o_amount,
+                      float o_limit, int o_account_id, int o_version){
+    work W(*C);
+    string sql = "UPDATE ORDERS SET STATE = EXECUTED WHERE";
+    sql += "TRANS_ID = "
+
+
+}
+
+/*
+    update the amount of the OPEN order.This function will throw exception if order version
+    is changed.
+*/
+void updateOpenOrder(connection* C, const string& o_sym, int o_remain_amount,
+                     float o_limit, int o_account_id, int o_version);
