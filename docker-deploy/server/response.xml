@@ -1,25 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <results>
-    <created id="1"/>
-    <created id="2"/>
-    <created id="3"/>
-    <created id="4"/>
-    <created id="5"/>
-    <error id="1">ERROR:  duplicate key value violates unique constraint "account_pkey"
-DETAIL:  Key (account_id)=(1) already exists.
-</error>
-    <error id="2">ERROR:  duplicate key value violates unique constraint "account_pkey"
-DETAIL:  Key (account_id)=(2) already exists.
-</error>
-    <created sym="Duke" id="1"/>
-    <created sym="Duke" id="2"/>
-    <created sym="Duke" id="3"/>
-    <created sym="Duke" id="3"/>
-    <created sym="USA" id="4"/>
-    <created sym="USA" id="5"/>
-    <created sym="USA" id="5"/>
-    <error sym="USA" id="6">ERROR:  insert or update on table "symbol" violates foreign key constraint "symbol_account_id_fkey"
-DETAIL:  Key (account_id)=(6) is not present in table "account".
-</error>
-    <created id="999"/>
+    <opened sym="Duke" amount="200" limit="1"/>
+    <opened sym="USA" amount="300" limit="2"/>
+    <error sym="Duke" amount="-500" limit="1">Error : Insufficient symbol on seller's Account</error>
+    <opened sym="USA" amount="-300" limit="1"/>
+    <error sym="Duck" amount="-500" limit="1">Error : Insufficient symbol on seller's Account</error>
+    <error sym="Duke" amount="200" limit="3">Error : Insufficient balance on buyer's account</error>
+    <opened sym="Duke" amount="-100" limit="2"/>
 </results>

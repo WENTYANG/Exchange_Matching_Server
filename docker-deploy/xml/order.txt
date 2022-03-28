@@ -1,0 +1,14 @@
+<transactions id="1">
+  <!--account1有100个Duke，400个USA，balance为1000-->
+  <!--购买，都是合法的，添加到系统中，A被扣除800，剩200-->
+  <order sym="Duke" amount="200" limit="1"/>
+  <order sym="USA" amount="300" limit="2"/>
+  <!--卖出，第一笔和第三笔不合法返回error，第二笔合法，A被扣除300个USA，同时会匹配上之前的第2个购买订单-->
+  <order sym="Duke" amount="-500" limit="1"/>
+  <order sym="USA" amount="-300" limit="1"/>
+  <order sym="Duck" amount="-500" limit="1"/>
+  <!--购买，A余额不足，不合法-->
+  <order sym="Duke" amount="200" limit="3"/>
+  <!--卖出，合法，但由于limit高于之前的买入价格，不能匹配到订单-->
+  <order sym="Duke" amount="-100" limit="2"/>
+</transactions>

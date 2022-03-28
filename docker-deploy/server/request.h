@@ -57,7 +57,8 @@ class Request {
         response.InsertEndChild(root);
     }
     virtual ~Request() {
-        for (auto ptr : subRequests) delete (ptr);
+        for (auto ptr : subRequests)
+            delete (ptr);
     }
 
     // for test
@@ -118,7 +119,8 @@ class Order : public SubRequest {
     virtual void reportError(XMLDocument& response, string msg);
 
    private:
-    bool isValid(){return true;}
+    bool isValid();
+    void match(const string& o_sym, int o_amount, float o_limit, int o_account_id, int o_version);
 };
 
 class Query : public SubRequest {

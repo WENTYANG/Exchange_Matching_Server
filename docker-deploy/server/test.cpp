@@ -45,20 +45,40 @@ Request* getParsed(string xml) {
     return req;
 }
 
-int main() {
+void testAdd() {
     Server s("12345");
     s.connectDB("exchange_server", "postgres", "passw0rd");
-    // addAccount(C, 1, 100);
-    // addAccount(C, 2, 200);
-    // addSymbol(C, "Duke", 1, 10);
-    // addSymbol(C, "Duke", 1, 10);
-    // addSymbol(C, "Duke", 2, 10);
+    addAccount(C, 1, 100);
+    addAccount(C, 2, 200);
+    addSymbol(C, "Duke", 1, 10);
+    addSymbol(C, "Duke", 1, 10);
+    addSymbol(C, "Duke", 2, 10);
+}
 
+void testExecute() {
+    Server s("12345");
+    s.connectDB("exchange_server", "postgres", "passw0rd");
     string xml = getXMLbyString("../xml/create.txt");
     // string xml = getXMLbyString("../xml/trans.txt");
     Request* req = getParsed(xml);
     req->executeRequest();
     req->saveResponse();
+}
+
+void testOrderNoMatch() {
+    Server s("12345");
+    s.connectDB("exchange_server", "postgres", "passw0rd");
+    string xml = getXMLbyString("../xml/create.txt");
+    Request* req = getParsed(xml);
+    req->executeRequest();
+
+    xml = getXMLbyString("../xml/order.txt");
+    req = getParsed(xml);
+    req->executeRequest();
+    req->saveResponse();
+}
+int main() {
+    testOrderNoMatch();
     return 0;
 }
 

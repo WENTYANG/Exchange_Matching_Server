@@ -11,7 +11,8 @@ void createTable(connection* C, string fileName) {
     ifstream ifs(fileName.c_str(), ifstream::in);
     if (ifs.is_open() == true) {
         string line;
-        while (getline(ifs, line)) sql.append(line);
+        while (getline(ifs, line))
+            sql.append(line);
     } else {
         throw MyException("fail to open file.");
     }
@@ -71,20 +72,72 @@ void addSymbol(connection* C, const string& sym, int account_id, int num) {
 
 /*
     if current order is a sell order, get all buy orders for the same
-   symbol.(price descending sort) if current order is a buy order, get all sell
+   symbol.(price ascending sort) if current order is a buy order, get all sell
    orders for the same symbol.(price descending sort) this function will set all
    the eligible orders into lock status(RWlock).
 */
-result getEligibleOrders(connection* C, const string& sym, float limit) {}
+result getEligibleOrders(connection* C,
+                         const string& sym,
+                         int amount,
+                         float limit) {
+    nontransaction N(*C);
+    stringstream sql;
+    // match order type(buy/sell), limit price and state(open), ordered by
+    // time(old->new)
+    if (amount > 0) {
+        // Buy
+        sql << "SELECT * FROM ORDERS WHERE SYM=" << N.quote(sym)
+            << " AND AMOUNT<0 AND LIMIT_PRICE<=" << limit
+            << "AND STATE=\'open\' ORDER BY LIMIT_PRICE DESC, TIME ASC;";
+    } else {
+        // Sell
+        sql << "SELECT * FROM ORDERS WHERE SYM=" << N.quote(sym)
+            << " AND AMOUNT>0 AND LIMIT_PRICE>=" << limit
+            << "AND STATE=\'open\' ORDER BY LIMIT_PRICE ASC, TIME ASC;";
+    }
+    result R(N.exec(sql.str()));
+    return R;
+}
 
 /*
-    insert an order into Order table
+    insert an OPEN order into Order table
 */
-void addOrder(connection* C, const string& sym, int amount, float limit,
-              int account_id) {}
+void addOrder(connection* C,
+              const string& sym,
+              int amount,
+              float limit,
+              int account_id) {
+    work W(*C);
+    stringstream sql;
+    sql << "INSERT INTO ORDERS(ACCOUNT_ID, SYM, AMOUNT, LIMIT_PRICE, STATE, "
+           "TIME) VALUES("
+        << account_id << "," << W.quote(sym) << "," << amount << "," << limit
+        << "," << W.quote("open") << ",NOW());";
+    W.exec(sql.str());
+    W.commit();
+}
 
 /*
-    reduce the monry or symbol from the corresponding account based on order info.
+    reduce the monry or symbol from the corresponding account based on order
+   info.
 */
-void reduceMoneyOrSymbol(connection* C, const string& sym, int account_id,
-                         int amount, float limit) {}
+void reduceMoneyOrSymbol(connection* C,
+                         const string& sym,
+                         int account_id,
+                         int amount,
+                         float limit) {
+    work W(*C);
+    stringstream sql;
+    if (amount > 0) {
+        // Buy: deduct money from buyer account
+        sql << "UPDATE ACCOUNT set BALANCE=ACCOUNT.BALANCE-" << amount * limit
+            << " WHERE ACCOUNT_ID=" << account_id << ";";
+    } else {
+        // Sell: deduct symbol from seller account
+        sql << "UPDATE SYMBOL set AMOUNT=SYMBOL.AMOUNT+" << amount
+            << " WHERE ACCOUNT_ID=" << account_id << "AND SYM=" << W.quote(sym)
+            << ";";
+    }
+    W.exec(sql.str());
+    W.commit();
+}
