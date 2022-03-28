@@ -72,7 +72,7 @@ void addSymbol(connection* C, const string& sym, int account_id, int num) {
 
 /*
     if current order is a sell order, get all buy orders for the same
-   symbol.(price descending sort) if current order is a buy order, get all sell
+   symbol.(price ascending sort) if current order is a buy order, get all sell
    orders for the same symbol.(price descending sort) this function will set all
    the eligible orders into lock status(RWlock).
 */
@@ -88,19 +88,19 @@ result getEligibleOrders(connection* C,
         // Buy
         sql << "SELECT * FROM ORDERS WHERE SYM=" << N.quote(sym)
             << " AND AMOUNT<0 AND LIMIT_PRICE<=" << limit
-            << "AND STATE=\'open\' ORDER BY TIME ASC;";
+            << "AND STATE=\'open\' ORDER BY LIMIT_PRICE DESC, TIME ASC;";
     } else {
         // Sell
         sql << "SELECT * FROM ORDERS WHERE SYM=" << N.quote(sym)
             << " AND AMOUNT>0 AND LIMIT_PRICE>=" << limit
-            << "AND STATE=\'open\' ORDER BY TIME ASC;";
+            << "AND STATE=\'open\' ORDER BY LIMIT_PRICE ASC, TIME ASC;";
     }
     result R(N.exec(sql.str()));
     return R;
 }
 
 /*
-    insert an order into Order table
+    insert an OPEN order into Order table
 */
 void addOrder(connection* C,
               const string& sym,
