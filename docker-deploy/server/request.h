@@ -104,10 +104,11 @@ class Order : public SubRequest {
   string sym;
   int amount;
   float limit;
+  int trans_id;
 
  public:
   Order(int id, string sym, int amount, int limit) :
-      SubRequest(id), sym(sym), amount(amount), limit(limit) {}
+      SubRequest(id), sym(sym), amount(amount), limit(limit), trans_id(-1) {}
   virtual void execute(XMLDocument & response);
   virtual void printSubRequest() {
     cout << "Order:" << endl;

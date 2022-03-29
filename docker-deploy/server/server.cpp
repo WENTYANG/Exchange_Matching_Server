@@ -46,7 +46,6 @@ void Server::run() {
     // generate new thread for each request
     string XMLrequest(buffer.data(), len);
     ClientInfo * info = new ClientInfo(client_fd, client_id, XMLrequest);
-    //这里需要加锁吗？ 主线程delete会让其他线程崩溃
     pthread_t thread;
     pthread_create(&thread, NULL, handleRequest, info);
 
@@ -99,6 +98,7 @@ void * Server::handleRequest(void * info) {
   r->executeRequest();
 
   //TODO: send back response
+  
 
   delete client_info;
   return nullptr;

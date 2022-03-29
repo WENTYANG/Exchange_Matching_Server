@@ -97,7 +97,7 @@ result getEligibleOrders(connection* C, const string& sym, int amount,
 }
 
 /*
-    insert order into Order table
+    insert new order into Order table, return the trans_id of this new order.
 */
 void addOrder(connection* C, const string& sym, int amount, float limit,
               int account_id, string state) {
@@ -110,6 +110,22 @@ void addOrder(connection* C, const string& sym, int amount, float limit,
     W.exec(sql.str());
     W.commit();
 }
+
+/*
+    insert an old order, which need to specify the trans_id, into Order table. Used for order spilt situtation.
+*/
+void addOrder(connection* C, int trans_id, const string& sym, int amount, float limit,
+              int account_id, string state) {
+    work W(*C);
+    stringstream sql;
+    sql << "INSERT INTO ORDERS(TRANS_ID, ACCOUNT_ID, SYM, AMOUNT, LIMIT_PRICE, STATE, "
+           "TIME) VALUES("
+        << trans_id << account_id << "," << W.quote(sym) << "," << amount << "," << limit
+        << "," << W.quote(state) << ",NOW());";
+    W.exec(sql.str());
+    W.commit();
+}
+
 
 /*
     reduce the monry or symbol from the corresponding account based on order

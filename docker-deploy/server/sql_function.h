@@ -20,6 +20,8 @@ result getEligibleOrders(connection* C, const string& sym, int amount,
                          float limit);
 void addOrder(connection* C, const string& sym, int amount, float limit,
               int account_id, string state);
+void addOrder(connection* C, int trans_id, const string& sym, int amount, float limit,
+              int account_id, string state);
 void reduceMoneyOrSymbol(connection* C, const string& sym, int account_id,
                          int amount, float limit);
 void setOrderExecuted(connection* C, int o_trans_id, const string& o_time,

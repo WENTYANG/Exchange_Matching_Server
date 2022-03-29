@@ -90,16 +90,18 @@ void Order::execute(XMLDocument & response) {
     return;
   }
   reduceMoneyOrSymbol(C, sym, account_id, amount, limit);
-  reportSuccess(response);
+  
 
   // get possible orders and then try to match. using optimistic lock and roll
   // back to control version.
+  
   while (1) {
     try {
       result list = getEligibleOrders(C, sym, amount, limit);
       if (list.empty()) {  // no eligible Orders
+        addOrder(C, sym, amount, limit, account_id, "open");  //TODO:参数改为由类指针传进去，根据类中的trans_id值判断是否新订单
+        reportSuccess(response);
         cout << "no eligible Orders\n";
-        addOrder(C, sym, amount, limit, account_id, "open");
         return;
       }
       for (auto const & order : list) {
@@ -134,7 +136,7 @@ void Order::execute(XMLDocument & response) {
       }
       if (abs(amount) > 0) {  // remain unmatch portion
         cout << "remain unmatch portion\n";
-        addOrder(C, sym, amount, limit, account_id, "open");
+        addOrder(C, sym, amount, limit, account_id, "open"); //TODO:
       }
       break;
     }
@@ -165,11 +167,12 @@ void Order::match(int o_trans_id,
                      o_time,
                      o_version);  //将对方订单整个设置为executed（primary key located）
     addOrder(C,
+             trans_id,
              sym,
              -1 * o_amount,
              o_limit,
              account_id,
-             "executed");  // 插入一个我的部分成交amount的executed订单
+             "executed");  // 插入一个我的部分成交amount的executed订单（需要trans_id判断新旧）
     myAmount -= opponentAmount;
   }
   else {
@@ -185,8 +188,9 @@ void Order::match(int o_trans_id,
              amount,
              o_limit,
              account_id,
-             "executed");  // 插入一个我的executed订单
+             "executed");  // 插入一个我的executed订单(需要trans_id判断新旧)
     addOrder(C,
+             o_trans_id,
              sym,
              -1 * amount,
              o_limit,
