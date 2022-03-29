@@ -77,10 +77,6 @@ void testOrderNoMatch() {
     req->executeRequest();
     req->saveResponse();
 }
-int main() {
-    testOrderNoMatch();
-    return 0;
-}
 
 void createXML() {
     tinyxml2::XMLDocument doc;
@@ -123,3 +119,26 @@ void createXML() {
     string buf = printer.CStr();  //转换成const char*类型
     cout << buf << endl;          // buf即为创建后的XML 字符串。
 }
+
+void testOrderMatch(){
+    Server s("12345");
+    s.connectDB("exchange_server", "postgres", "passw0rd");
+    
+    // 初始化账户和对应symbol
+    string xml = getXMLbyString("../xml/create.xml");
+    Request* req = getParsed(xml);
+    req->executeRequest();
+
+    // 读取并执行order
+    xml = getXMLbyString("../xml/order_TestForMatch.xml");
+    req = getParsed(xml);
+    req->executeRequest();
+    req->saveResponse();
+
+}
+
+int main() {
+    testOrderMatch();
+    return 0;
+}
+

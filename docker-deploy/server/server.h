@@ -2,11 +2,13 @@
 #define _SERVER_H
 
 #include <pthread.h>
+
 #include <cstdio>
 #include <iostream>
 #include <pqxx/pqxx>
 #include <string>
 #include <vector>
+
 #include "clientInfo.h"
 #include "exception.h"
 #include "parser.h"
@@ -16,18 +18,18 @@
 
 using namespace pqxx;
 
-extern connection* C;
+extern connection * C;
 
 class Server {
-   private:
-    string portNum;
+ private:
+  string portNum;
 
-   public:
-    Server(string port) : portNum(port) {}
-    ~Server() {}
-    void run();
-    void connectDB(string dbName, string userName, string password);
-    static void* handleRequest(void* info);
+ public:
+  Server(string port) : portNum(port) {}
+  ~Server() {}
+  void run();
+  void connectDB(string dbName, string userName, string password);
+  static void * handleRequest(void * info);
 };
 
 #endif

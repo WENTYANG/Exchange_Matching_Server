@@ -11,8 +11,7 @@ void createTable(connection* C, string fileName) {
     ifstream ifs(fileName.c_str(), ifstream::in);
     if (ifs.is_open() == true) {
         string line;
-        while (getline(ifs, line))
-            sql.append(line);
+        while (getline(ifs, line)) sql.append(line);
     } else {
         throw MyException("fail to open file.");
     }
@@ -76,9 +75,7 @@ void addSymbol(connection* C, const string& sym, int account_id, int num) {
    orders for the same symbol.(price descending sort) this function will set all
    the eligible orders into lock status(RWlock).
 */
-result getEligibleOrders(connection* C,
-                         const string& sym,
-                         int amount,
+result getEligibleOrders(connection* C, const string& sym, int amount,
                          float limit) {
     nontransaction N(*C);
     stringstream sql;
@@ -100,19 +97,16 @@ result getEligibleOrders(connection* C,
 }
 
 /*
-    insert an OPEN order into Order table
+    insert order into Order table
 */
-void addOrder(connection* C,
-              const string& sym,
-              int amount,
-              float limit,
-              int account_id) {
+void addOrder(connection* C, const string& sym, int amount, float limit,
+              int account_id, string state) {
     work W(*C);
     stringstream sql;
     sql << "INSERT INTO ORDERS(ACCOUNT_ID, SYM, AMOUNT, LIMIT_PRICE, STATE, "
            "TIME) VALUES("
         << account_id << "," << W.quote(sym) << "," << amount << "," << limit
-        << "," << W.quote("open") << ",NOW());";
+        << "," << W.quote(state) << ",NOW());";
     W.exec(sql.str());
     W.commit();
 }
@@ -121,11 +115,8 @@ void addOrder(connection* C,
     reduce the monry or symbol from the corresponding account based on order
    info.
 */
-void reduceMoneyOrSymbol(connection* C,
-                         const string& sym,
-                         int account_id,
-                         int amount,
-                         float limit) {
+void reduceMoneyOrSymbol(connection* C, const string& sym, int account_id,
+                         int amount, float limit) {
     work W(*C);
     stringstream sql;
     if (amount > 0) {
@@ -143,21 +134,34 @@ void reduceMoneyOrSymbol(connection* C,
 }
 
 /*
-    set the whole OPEN order EXECUTED. This function will throw exception if order version
-    is changed.
+    set the specific OPEN order EXECUTED. This function will throw exception if
+   order's version is changed. If succeed, it will update this order's version.
 */
-void setOrderExecuted(connection* C, const string& o_sym, int o_amount,
-                      float o_limit, int o_account_id, int o_version){
+void setOrderExecuted(connection* C, int o_trans_id, const string& o_time,
+                      int o_version) {
     work W(*C);
-    string sql = "UPDATE ORDERS SET STATE = EXECUTED WHERE";
-    sql += "TRANS_ID = "
-
-
+    string sql = "UPDATE ORDERS SET STATE = "+W.quote("executed")+", VERSION = " +
+                 to_string(o_version + 1) +
+                 " WHERE TRANS_ID = " + to_string(o_trans_id) +
+                 " AND TIME = " + W.quote(o_time) + " AND VERSION = " + to_string(o_version) +
+                 ";";          
+    W.exec(sql.c_str());
+    W.commit();
 }
 
 /*
-    update the amount of the OPEN order.This function will throw exception if order version
-    is changed.
+    update the amount of the specific OPEN order.This function will throw
+   exception if order version is changed. If succeed, it will update this
+   order's version.
 */
-void updateOpenOrder(connection* C, const string& o_sym, int o_remain_amount,
-                     float o_limit, int o_account_id, int o_version);
+void updateOpenOrder(connection* C, int o_remain_amount, int o_trans_id,
+                     const string& o_time, int o_version) {
+    work W(*C);
+    string sql = "UPDATE ORDERS SET AMONUT = " + to_string(o_remain_amount) +
+                 ", VERSION = " + to_string(o_version + 1) +
+                 " WHRER TRANS_ID = " + to_string(o_trans_id) +
+                 " AND TIME = " + W.quote(o_time) + " AND VERSION = " + to_string(o_version) +
+                 ";";
+    W.exec(sql.c_str());
+    W.commit();
+}

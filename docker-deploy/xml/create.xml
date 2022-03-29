@@ -1,0 +1,13 @@
+<create> 
+  <account id="1" balance="1000"/>
+  <account id="2" balance="1000"/>
+  <account id="3" balance="1000"/>
+  <account id="4" balance="1000"/>
+  <account id="5" balance="0"/>
+  <symbol sym="SUSI">
+    <account id="1">100</account>
+    <account id="2">200</account>
+    <account id="3">300</account>
+    <account id="4">400</account>
+  </symbol>
+ </create>
