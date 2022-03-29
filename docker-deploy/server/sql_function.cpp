@@ -11,7 +11,8 @@ void createTable(connection* C, string fileName) {
     ifstream ifs(fileName.c_str(), ifstream::in);
     if (ifs.is_open() == true) {
         string line;
-        while (getline(ifs, line)) sql.append(line);
+        while (getline(ifs, line))
+            sql.append(line);
     } else {
         throw MyException("fail to open file.");
     }
@@ -75,7 +76,9 @@ void addSymbol(connection* C, const string& sym, int account_id, int num) {
    orders for the same symbol.(price descending sort) this function will set all
    the eligible orders into lock status(RWlock).
 */
-result getEligibleOrders(connection* C, const string& sym, int amount,
+result getEligibleOrders(connection* C,
+                         const string& sym,
+                         int amount,
                          float limit) {
     nontransaction N(*C);
     stringstream sql;
@@ -99,8 +102,12 @@ result getEligibleOrders(connection* C, const string& sym, int amount,
 /*
     insert order into Order table
 */
-void addOrder(connection* C, const string& sym, int amount, float limit,
-              int account_id, string state) {
+void addOrder(connection* C,
+              const string& sym,
+              int amount,
+              float limit,
+              int account_id,
+              string state) {
     work W(*C);
     stringstream sql;
     sql << "INSERT INTO ORDERS(ACCOUNT_ID, SYM, AMOUNT, LIMIT_PRICE, STATE, "
@@ -115,8 +122,11 @@ void addOrder(connection* C, const string& sym, int amount, float limit,
     reduce the monry or symbol from the corresponding account based on order
    info.
 */
-void reduceMoneyOrSymbol(connection* C, const string& sym, int account_id,
-                         int amount, float limit) {
+void reduceMoneyOrSymbol(connection* C,
+                         const string& sym,
+                         int account_id,
+                         int amount,
+                         float limit) {
     work W(*C);
     stringstream sql;
     if (amount > 0) {
@@ -137,14 +147,16 @@ void reduceMoneyOrSymbol(connection* C, const string& sym, int account_id,
     set the specific OPEN order EXECUTED. This function will throw exception if
    order's version is changed. If succeed, it will update this order's version.
 */
-void setOrderExecuted(connection* C, int o_trans_id, const string& o_time,
+void setOrderExecuted(connection* C,
+                      int o_trans_id,
+                      const string& o_time,
                       int o_version) {
     work W(*C);
-    string sql = "UPDATE ORDERS SET STATE = "+W.quote("executed")+", VERSION = " +
-                 to_string(o_version + 1) +
+    string sql = "UPDATE ORDERS SET STATE = " + W.quote("executed") +
+                 ", VERSION = " + to_string(o_version + 1) +
                  " WHERE TRANS_ID = " + to_string(o_trans_id) +
-                 " AND TIME = " + W.quote(o_time) + " AND VERSION = " + to_string(o_version) +
-                 ";";          
+                 " AND TIME = " + W.quote(o_time) +
+                 " AND VERSION = " + to_string(o_version) + ";";
     W.exec(sql.c_str());
     W.commit();
 }
@@ -154,14 +166,31 @@ void setOrderExecuted(connection* C, int o_trans_id, const string& o_time,
    exception if order version is changed. If succeed, it will update this
    order's version.
 */
-void updateOpenOrder(connection* C, int o_remain_amount, int o_trans_id,
-                     const string& o_time, int o_version) {
+void updateOpenOrder(connection* C,
+                     int o_remain_amount,
+                     int o_trans_id,
+                     const string& o_time,
+                     int o_version) {
     work W(*C);
     string sql = "UPDATE ORDERS SET AMONUT = " + to_string(o_remain_amount) +
                  ", VERSION = " + to_string(o_version + 1) +
                  " WHRER TRANS_ID = " + to_string(o_trans_id) +
-                 " AND TIME = " + W.quote(o_time) + " AND VERSION = " + to_string(o_version) +
-                 ";";
+                 " AND TIME = " + W.quote(o_time) +
+                 " AND VERSION = " + to_string(o_version) + ";";
     W.exec(sql.c_str());
     W.commit();
+}
+
+/*
+Given a trans_id, search for all the orders with this trans_id in the orders
+table. Return the results as (state, amount, price, time). There might be 1 open
++ multiple executed, or 1 canceled + multiple executed.
+*/
+result searchOrders(connection* C, int trans_id) {
+    nontransaction N(*C);
+    stringstream sql;
+    sql << "SELECT STATE, AMOUNT, LIMIT_PRICE, TIME FROM ORDERS WHERE TRANS_ID="
+        << trans_id << ";";
+    result R(N.exec(sql.str()));
+    return R;
 }
