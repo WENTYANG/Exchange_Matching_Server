@@ -20,8 +20,8 @@ void Account::execute(XMLDocument & response) {
 */
 void Account::reportSuccess(XMLDocument & response) {
   /*
-    Attribute "id"="account_id" 可能setattribute的时候要转成str
-    */
+      Attribute "id"="account_id" 可能setattribute的时候要转成str
+      */
   XMLElement * root = response.RootElement();
   XMLElement * created = response.NewElement("created");
   created->SetAttribute("id", account_id);
@@ -90,16 +90,14 @@ void Order::execute(XMLDocument & response) {
     return;
   }
   reduceMoneyOrSymbol(C, sym, account_id, amount, limit);
-  
 
   // get possible orders and then try to match. using optimistic lock and roll
   // back to control version.
-  
   while (1) {
     try {
       result list = getEligibleOrders(C, sym, amount, limit);
       if (list.empty()) {  // no eligible Orders
-        addOrder(C, sym, amount, limit, account_id, "open");  //TODO:参数改为由类指针传进去，根据类中的trans_id值判断是否新订单
+        addOrder(C, this->trans_id, this->amount, this->limit, this->account_id, this->sym, "open");  
         reportSuccess(response);
         cout << "no eligible Orders\n";
         return;
@@ -136,7 +134,7 @@ void Order::execute(XMLDocument & response) {
       }
       if (abs(amount) > 0) {  // remain unmatch portion
         cout << "remain unmatch portion\n";
-        addOrder(C, sym, amount, limit, account_id, "open"); //TODO:
+        addOrder(C, this->trans_id, this->amount, this->limit, this->account_id, this->sym, "open");  
       }
       break;
     }
@@ -144,6 +142,7 @@ void Order::execute(XMLDocument & response) {
       std::cerr << e.what() << '\n';
     }
   }
+  reportSuccess(response);
 }
 
 /*
@@ -162,40 +161,16 @@ void Order::match(int o_trans_id,
   char myStatus = amount > 0 ? 'B' : 'S';
 
   if (myAmount >= opponentAmount) {
-    setOrderExecuted(C,
-                     o_trans_id,
-                     o_time,
-                     o_version);  //将对方订单整个设置为executed（primary key located）
-    addOrder(C,
-             trans_id,
-             sym,
-             -1 * o_amount,
-             o_limit,
-             account_id,
-             "executed");  // 插入一个我的部分成交amount的executed订单（需要trans_id判断新旧）
+    setOrderExecuted(C, o_trans_id, o_time, o_version);  //将对方订单整个设置为executed（primary key located）
+    addOrder(C, this->trans_id, -1 * o_amount, o_limit, this->account_id, this->sym, "executed");  // 插入一个我的executed订单，amount为部分成交额
     myAmount -= opponentAmount;
   }
   else {
     int o_remain_amount =
         myStatus == 'B' ? -1 * (opponentAmount - myAmount) : (opponentAmount - myAmount);
-    updateOpenOrder(C,
-                    o_remain_amount,
-                    o_trans_id,
-                    o_time,
-                    o_version);  // 更新对方订单，amount调整为剩余数量
-    addOrder(C,
-             sym,
-             amount,
-             o_limit,
-             account_id,
-             "executed");  // 插入一个我的executed订单(需要trans_id判断新旧)
-    addOrder(C,
-             o_trans_id,
-             sym,
-             -1 * amount,
-             o_limit,
-             o_account_id,
-             "executed");  // 插入对方的部分成交amount的订单
+    updateOpenOrder(C, o_remain_amount, o_trans_id, o_time, o_version);  // 更新对方订单，amount调整为剩余数量
+    addOrder(C, this->trans_id, this->amount, o_limit, this->account_id, this->sym, "executed");  // 插入一个我的executed订单，amount为全部成交额
+    addOrder(C, o_trans_id, -1 * this->amount, o_limit, o_account_id, this->sym, "executed");  // 插入一个对方部分成交的executed订单
     myAmount = 0;
   }
 
@@ -247,12 +222,13 @@ bool Order::isValid() {
     <opened sym="SYM" amount="AMT" limit="LMT" id="TRANS_ID"/>
 */
 void Order::reportSuccess(XMLDocument & response) {
-  XMLElement * root = response.RootElement();
-  XMLElement * opened = response.NewElement("opened");
-  opened->SetAttribute("sym", sym.c_str());
-  opened->SetAttribute("amount", amount);
-  opened->SetAttribute("limit", limit);
-  root->InsertEndChild(opened);
+//   XMLElement * root = response.RootElement();
+//   XMLElement * opened = response.NewElement("opened");
+//   opened->SetAttribute("sym", sym.c_str());
+//   opened->SetAttribute("amount", amount);
+//   opened->SetAttribute("limit", limit);
+//   root->InsertEndChild(opened);
+// need to change
 }
 
 /*
@@ -272,6 +248,18 @@ void Order::reportError(XMLDocument & response, string msg) {
 
 /* ------------------------ "Query" Function ------------------------ */
 void Query::execute(XMLDocument & response) {
+  result list = searchOrders(C, trans_id);
+  if (list.empty()) {
+    reportError(response, "Trans_id doesn't exist");
+  }
+  for (auto const & order : list) {
+    string state = order[0].as<string>();
+    int shares = order[1].as<int>();
+    // if (strcmp(state, "open") == 0) {
+    // }
+    float price = order[2].as<float>();
+    string time = order[3].as<string>();
+  }
 }
 
 /*
