@@ -29,7 +29,12 @@ class Server {
   ~Server() {}
   void run();
   void connectDB(string dbName, string userName, string password);
-  static void * handleRequest(void * info);
+  static void* handleRequest(void * info);
+
+ private:
+  void recvRequest(int client_fd, string& wholeRequest);
+  static void sendResponse(int client_fd, const string& XMLresponse);
 };
+
 
 #endif

@@ -40,6 +40,7 @@ void Client::run() {
   }
 
   //发完create后，生成 threads 发送大量的trans request
+  //TODO
 }
 
 /*
@@ -66,6 +67,7 @@ void Client::sendCreateRequest() {
   }
   string XMLresponse(buffer.data(), len);
   convertStringToFile(responseFileName, XMLresponse);
+  return;
 }
 
 

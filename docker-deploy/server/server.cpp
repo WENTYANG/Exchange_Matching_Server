@@ -31,20 +31,11 @@ void Server::run() {
       continue;
     }
 
-    // accept new XML request
-    vector<char> buffer(MAX_LENGTH, 0);
-    int len = recv(client_fd,
-                   &(buffer.data()[0]),
-                   MAX_LENGTH,
-                   0);  // len 是recv实际的读取字节数
-    if (len <= 0) {
-      std::cerr << "fail to accept request." << '\n';
-      close(client_fd);
-      continue;
-    }
+    // server receive request
+    string XMLrequest;
+    recvRequest(client_fd, XMLrequest);
 
     // generate new thread for each request
-    string XMLrequest(buffer.data(), len);
     ClientInfo * info = new ClientInfo(client_fd, client_id, XMLrequest);
     pthread_t thread;
     pthread_create(&thread, NULL, handleRequest, info);
@@ -98,8 +89,36 @@ void * Server::handleRequest(void * info) {
   r->executeRequest();
 
   //TODO: send back response
-  
+  //sendResponse(client_info->client_fd, r->response);
 
   delete client_info;
   return nullptr;
+}
+
+void Server::recvRequest(int client_fd, string & wholeRequest) {
+  vector<char> buffer(MAX_LENGTH, 0);
+
+  //receive first request.
+  int len = recv(client_fd,
+                 &(buffer.data()[0]),
+                 MAX_LENGTH,
+                 0);  // len 是recv实际的读取字节数
+  if (len <= 0) {
+    close(client_fd);
+    throw MyException("fail to accept request.\n");
+  }
+  string firstRequest(buffer.data(), len);
+
+  // int contentLength = getContentLength(firstRequest);
+  wholeRequest = firstRequest;
+  int remainReceiveLen = contentLength - firstRequest.length();
+  int receiveLen = 0;
+  while (receiveLen < remainReceiveLen) {
+    int len = recv(client_fd, &(buffer.data()[0]), MAX_LENGTH, 0);
+    if (len < 0)
+      break;
+    string temp(buffer.data(), len);
+    wholeRequest += temp;
+    receiveLen += len;
+  }
 }
