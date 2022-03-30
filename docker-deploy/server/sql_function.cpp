@@ -195,7 +195,6 @@ void updateOpenOrder(connection* C,
                      int o_trans_id,
                      const string& o_time,
                      int o_version) {
-<<<<<<< HEAD
     work W(*C);
     string sql = "UPDATE ORDERS SET AMOUNT = " + to_string(o_remain_amount) +
                  ", VERSION = " + to_string(o_version + 1) +
@@ -205,16 +204,6 @@ void updateOpenOrder(connection* C,
     // cout << sql << endl;
     W.exec(sql.c_str());
     W.commit();
-=======
-  work W(*C);
-  string sql = "UPDATE ORDERS SET AMONUT = " + to_string(o_remain_amount) +
-               ", VERSION = " + to_string(o_version + 1) +
-               " WHERE TRANS_ID = " + to_string(o_trans_id) +
-               " AND TIME = " + W.quote(o_time) +
-               " AND VERSION = " + to_string(o_version) + ";";
-  W.exec(sql.c_str());
-  W.commit();
->>>>>>> 1d3a015477b88943119dae2753348789c3512834
 }
 
 /*
@@ -242,7 +231,8 @@ void cancelOrder(connection* C, int trans_id) {
         << ";";
     result updateRes(W.exec(sql.str()));
     result::size_type rows = updateRes.affected_rows();
-    cout << "trans_id = " << trans_id << " and affected rows=" << rows << endl;
+    // cout << "trans_id = " << trans_id << " and affected rows=" << rows <<
+    // endl;
     if (rows == 0) {
         // Did not update any row-->the trans_id doesn't exist
         throw MyException(

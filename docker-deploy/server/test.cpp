@@ -115,14 +115,32 @@ void testCancel() {
     Server s("12345");
     s.connectDB("exchange_server", "postgres", "passw0rd");
     string xml = getXMLbyString("../xml/create2.xml");
+
+    size_t size = sizeof(char) * (xml.length() + 1);
+    xml = to_string(size) + xml;
+    int len = getContentLength(xml);
+    cout << "length: " << len << endl;
+
     Request* req = getParsed(xml);
     req->executeRequest();
 
     xml = getXMLbyString("../xml/order_test1.xml");
+
+    size = sizeof(char) * (xml.length() + 1);
+    xml = to_string(size) + xml;
+    len = getContentLength(xml);
+    cout << "length: " << len << endl;
+
     req = getParsed(xml);
     req->executeRequest();
 
     xml = getXMLbyString("../xml/cancel1.xml");
+
+    size = sizeof(char) * (xml.length() + 1);
+    xml = to_string(size) + xml;
+    len = getContentLength(xml);
+    cout << "length: " << len << endl;
+
     req = getParsed(xml);
     req->executeRequest();
     req->saveResponse();

@@ -315,7 +315,7 @@ void Query::reportError(XMLDocument& response, string msg) {
 void Cancel::execute(XMLDocument& response) {
     result R;
     try {
-        cout << "Canceling order: " << trans_id << endl;
+        // cout << "Canceling order: " << trans_id << endl;
         cancelOrder(C, trans_id);
     } catch (const std::exception& e) {
         reportError(response, e.what());

@@ -93,3 +93,11 @@ Request* parse_trans(XMLDocument* xml) {
     }
     return request;
 }
+
+/*
+Get the content length on the first row of the request
+*/
+int getContentLength(string data) {
+    size_t firstLine = data.find('\n', 0);
+    return stoi(data.substr(0, firstLine));
+}

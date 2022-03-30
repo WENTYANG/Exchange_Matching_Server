@@ -14,9 +14,10 @@
 using namespace tinyxml2;
 
 /* ------------------------ Parse functions ------------------------ */
-XMLDocument * convert_to_file(string xml);
-int request_type(XMLDocument * xml);
-Request * parse_create(XMLDocument * xml);
-Request * parse_trans(XMLDocument * xml);
+XMLDocument* convert_to_file(string xml);
+int request_type(XMLDocument* xml);
+Request* parse_create(XMLDocument* xml);
+Request* parse_trans(XMLDocument* xml);
+int getContentLength(string data);
 
 #endif
