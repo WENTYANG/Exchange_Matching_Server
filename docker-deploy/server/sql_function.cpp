@@ -307,9 +307,9 @@ void executeOrder(connection * C,
   work W(*C);
   assert(amount != 0);
 
-  if (amount > 0) {  // sell order
-    float income = price * amount;
-    string sql = "UPDATE ACCOUNT SET BALANCE = ACCOUNT.BALANCE + " + to_string(income) +
+  if (amount < 0) {  // sell order
+    float income = price * abs(amount);
+    string sql = "UPDATE ACCOUNT SET BALANCE = ACCOUNT.BALANCE + " + to_string(income) + ", VERSION = ACCOUNT.VERSION + 1 "
                  "WHERE ACCOUNT_ID = " + to_string(account_id) + ";";
     W.exec(sql.c_str());
   }
@@ -317,9 +317,8 @@ void executeOrder(connection * C,
     stringstream sql;
     sql << "INSERT INTO SYMBOL(ACCOUNT_ID, SYM, AMOUNT) VALUES(" << account_id << ","
         << W.quote(sym) << "," << amount
-        << ") ON CONFLICT ON CONSTRAINT symbol_pk DO UPDATE SET AMOUNT = " << amount
-        << "+"
-        << "SYMBOL.AMOUNT"
+        << ") ON CONFLICT ON CONSTRAINT symbol_pk DO UPDATE SET AMOUNT = SYMBOL.AMOUNT + " << amount
+        <<", VERSION = SYMBOL.VERSION + 1"
         << ";";
     W.exec(sql.str());
   }
