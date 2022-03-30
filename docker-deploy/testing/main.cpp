@@ -14,12 +14,10 @@ int main(int argc, char * argv[]) {
   string serverPort;
   checkInput(argc, argv, serverName, serverPort);
 
-  
-
   // generate clients
   vector<pthread_t> threads;
   for (size_t i = 0; i < N_client; i++) {
-    Args* info = new Args(serverName, serverPort, i);
+    Args * info = new Args(serverName, serverPort, i);
     pthread_t t;
     int res = pthread_create(&t, NULL, initializeClient, &info);
     if (res < 0) {
@@ -31,7 +29,6 @@ int main(int argc, char * argv[]) {
   for (size_t i = 0; i < N_client; i++) {
     pthread_join(threads[i], NULL);
   }
-
 
   return 0;
 }
@@ -45,9 +42,10 @@ void checkInput(int argc, char * argv[], string & masterName, string & masterPor
 }
 
 void * initializeClient(void * ptr) {
-    Args* info = (Args*) ptr;
-    Client c(info->serverName, info->serverPort, info->account_id);
-    
-    delete info;
-    return nullptr;
+  Args * info = (Args *)ptr;
+  Client c(info->serverName, info->serverPort, info->account_id);
+  c.run();
+
+  delete info;
+  return nullptr;
 }

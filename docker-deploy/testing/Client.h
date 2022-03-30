@@ -34,19 +34,16 @@ class Client {
   void run();
   void sendCreateRequest();
 
-  private:
+ private:
   string getCreateRequest();
 };
 
+//线程启动函数，声明为模板函数
 template<typename TYPE, void (TYPE::*_RunThread)()>
-void * _thread_run(void * param)  //线程启动函数，声明为模板函数
-{
+void * _thread_run(void * param) {
   TYPE * This = (TYPE *)param;  //传入的是object的this指针，用于启动非静态成员函数
   This->_RunThread();
   return NULL;
 }
-
-
-
 
 #endif
