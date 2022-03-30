@@ -2,80 +2,170 @@
 
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <vector>
 
 #include "exception.h"
-#include "functions.h"
 #include "socket.h"
 
 using namespace std;
+using namespace tinyxml2;
 
 #define MAX_LENGTH 65536
 #define N_Thread_CREATE 3  //用于创建并发送create type的线程数量
+#define NUM_SYMBOL 2
+#define INITIAL_SYMBOL_AMOUNT 100
+#define INITIAL_BALANCE 1000.0
 
-static vector<string> symbolName = {"Byd", "Tesla", "Xpeng", "Nio", "BMW", "ONE"};
+static vector<string> symbolName = {"Byd", "Tesla", "Xpeng",
+                                    "Nio", "BMW",   "ONE"};
 
-Client::Client(string name, string port, int id) :
-    serverName(name), serverPort(port), account_id(id) {
-  server_fd = clientRequestConnection(serverName, serverPort);
+Client::Client(string name, string port, int id)
+    : serverName(name), serverPort(port), account_id(id), balance(0.0) {
+    // server_fd = clientRequestConnection(serverName, serverPort);
 }
 
 void Client::run() {
-  vector<pthread_t> createThreads;
+    vector<pthread_t> createThreads;
 
-  // send a batch of create type request (add account and symbols)
-  for (size_t i = 0; i < N_Thread_CREATE; i++) {
-    pthread_t t;
-    int res =
-        pthread_create(&t, NULL, _thread_run<Client, &Client::sendCreateRequest>, this);
-    if (res < 0) {
-      std::cerr << "pthread create error.\n";
-      exit(EXIT_FAILURE);
+    // send a batch of create type request (add account and symbols)
+    for (size_t i = 0; i < N_Thread_CREATE; i++) {
+        pthread_t t;
+        int res = pthread_create(
+            &t, NULL, _thread_run<Client, &Client::sendCreateRequest>, this);
+        if (res < 0) {
+            std::cerr << "pthread create error.\n";
+            exit(EXIT_FAILURE);
+        }
+        createThreads.push_back(t);
     }
-    createThreads.push_back(t);
-  }
-  for (size_t i = 0; i < N_Thread_CREATE; i++) {
-    pthread_join(createThreads[i], NULL);
-  }
+    for (size_t i = 0; i < N_Thread_CREATE; i++) {
+        pthread_join(createThreads[i], NULL);
+    }
 
-  //发完create后，生成 threads 发送大量的trans request
-  //TODO
+    //发完create后，生成 threads 发送大量的trans request
+    // TODO
 }
 
 /*
-    send "CREATE" request, which include one create account request, and several create symbol request.
+    send "CREATE" request, which include one create account request, and several
+   create symbol request.
 */
 void Client::sendCreateRequest() {
-  pthread_t self = pthread_self();
+    pthread_t self = pthread_self();
 
-  string XMLrequest = getCreateRequest();
+    string XMLrequest = getCreateRequest();
 
-  // save request and send it to server
-  string requestFileName = "t" + to_string(self) + "_createRequest.xml";
-  convertStringToFile(requestFileName, XMLrequest);
-  if (send(server_fd, XMLrequest.c_str(), XMLrequest.length(), 0) < 0) {
-    throw MyException("Fail to send GET request to server.\n");
-  }
+    // save request and send it to server
+    string requestFileName = "t" + to_string(self) + "_createRequest.xml";
+    convertStringToFile(requestFileName, XMLrequest);
+    if (send(server_fd, XMLrequest.c_str(), XMLrequest.length(), 0) < 0) {
+        throw MyException("Fail to send GET request to server.\n");
+    }
 
-  // receive response from server
-  string responseFileName = "t" + to_string(self) + "_createReponse.xml";
-  vector<char> buffer(MAX_LENGTH, 0);
-  int len = recv(server_fd, &(buffer.data()[0]), MAX_LENGTH, 0);
-  if (len <= 0) {
-    throw MyException("Fail to receive response from server.\n");
-  }
-  string XMLresponse(buffer.data(), len);
-  convertStringToFile(responseFileName, XMLresponse);
-  return;
+    // receive response from server
+    string responseFileName = "t" + to_string(self) + "_createReponse.xml";
+    vector<char> buffer(MAX_LENGTH, 0);
+    int len = recv(server_fd, &(buffer.data()[0]), MAX_LENGTH, 0);
+    if (len <= 0) {
+        throw MyException("Fail to receive response from server.\n");
+    }
+    string XMLresponse(buffer.data(), len);
+    convertStringToFile(responseFileName, XMLresponse);
+    return;
 }
 
+/*
+  generate "create" repquest, which include one create account request, and
+  several create symbol request. each account has random balance. it will create
+  2 random symbols with random amount in this account.
+*/
+string Client::getCreateRequest() {
+    /*
+      <create>
+        <account id="ACCOUNT_ID" balance="BALANCE"/> #0 or more
+        <symbol sym="SYM"> #0 or more
+          <account id="ACCOUNT_ID">NUM</account> #1 or more
+        </symbol>
+      </create>
+    */
+    XMLDocument request;
+
+    // Add declaration for request xml (e.g. <?xml version="1.0"
+    // encoding="utf-8" standalone="yes" ?>)
+    XMLDeclaration* declaration = request.NewDeclaration();
+    request.InsertFirstChild(declaration);
+
+    // Create root element:<create></create>
+    XMLElement* root = request.NewElement("create");
+    request.InsertEndChild(root);
+
+    // Generate create account request, track balance in the client object
+    createAccount(account_id, INITIAL_BALANCE, request);
+    balance = INITIAL_BALANCE;
+
+    // Generate create symbol request, track symbol name:amount in the clients
+    for (int i = 0; i < NUM_SYMBOL; i++) {
+        string sym = symbolName[getRandomINT(0, symbolName.size() - 1)];
+        createSymbol(sym, account_id, INITIAL_SYMBOL_AMOUNT, request);
+        if (symbol[sym]) {
+            symbol[sym] += INITIAL_SYMBOL_AMOUNT;
+        } else {
+            symbol[sym] = INITIAL_SYMBOL_AMOUNT;
+        }
+    }
+
+    // Convert XMLDocument to string
+    XMLPrinter printer;
+    request.Print(&printer);
+    string requestStr = printer.CStr();
+
+    // Add the length of request to the head of string
+    size_t size = sizeof(char) * (requestStr.length() + 1);
+    requestStr = to_string(size) + '\n' + requestStr;
+
+    return requestStr;
+}
 
 /*
-  generate "create" repquest, which include one create account request, and several create symbol request.
-  each account has random balance.
-  it will create 2 random symbols with random amount in this account.
+Given an XMLDocument object, add an account node under its root
 */
-string Client::getCreateRequest(){
-  //TODO  随机函数在functioins.h已经实现
+void createAccount(int account_id, float balance, XMLDocument& request) {
+    //<account id="ACCOUNT_ID" balance="BALANCE"/>
+    XMLElement* root = request.RootElement();
+    XMLElement* account = request.NewElement("account");
+    account->SetAttribute("id", account_id);
+    account->SetAttribute("balance", balance);
+    root->InsertEndChild(account);
+}
+
+/*
+Given an XMLDocument object, add a symbol node under its root
+*/
+void createSymbol(string sym,
+                  int account_id,
+                  int amount,
+                  XMLDocument& request) {
+    //<symbol sym="SYM">
+    XMLElement* root = request.RootElement();
+    XMLElement* symbol = request.NewElement("symbol");
+    symbol->SetAttribute("sym", sym.c_str());
+
+    //   <account id="ACCOUNT_ID">NUM</account>
+    XMLElement* account = request.NewElement("account");
+    account->SetAttribute("id", account_id);
+    XMLText* NUM = request.NewText(to_string(amount).c_str());
+    account->InsertFirstChild(NUM);
+    symbol->InsertEndChild(account);
+
+    root->InsertEndChild(symbol);
+}
+
+std::ostream& operator<<(std::ostream& out, const Client& client) {
+    out << "Account id: " << client.account_id << endl;
+    out << "Balance: " << client.balance << endl;
+    out << "Symbols: " << endl;
+    for (auto& s : client.symbol) {
+        cout << s.first << ":" << s.second << endl;
+    }
+    return out;
 }

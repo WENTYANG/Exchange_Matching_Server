@@ -269,11 +269,15 @@ void Query::execute(XMLDocument& response) {
 */
 void Query::reportSuccess(XMLDocument& response) {
     XMLElement* root = response.RootElement();
+    //<status id="TRANS_ID">
     XMLElement* status = response.NewElement("status");
     status->SetAttribute("id", trans_id);
+
     for (auto const& order : query_result) {
         string state = order[0].as<string>();
         int shares = order[1].as<int>();
+
+        //<open shares=.../>
         if (state == "open") {
             XMLElement* open = response.NewElement("open");
             open->SetAttribute("shares", shares);
@@ -281,12 +285,17 @@ void Query::reportSuccess(XMLDocument& response) {
         } else {
             float price = order[2].as<float>();
             string time = order[3].as<string>();
+
+            //<canceled shares=... time=.../>
             if (state == "canceled") {
                 XMLElement* canceled = response.NewElement("canceled");
                 canceled->SetAttribute("shares", shares);
                 canceled->SetAttribute("time", time.c_str());
                 status->InsertEndChild(canceled);
-            } else {
+            }
+
+            else {
+                //<executed shares=... price=... time=.../>
                 XMLElement* executed = response.NewElement("executed");
                 executed->SetAttribute("shares", shares);
                 executed->SetAttribute("price", price);
@@ -334,6 +343,8 @@ void Cancel::execute(XMLDocument& response) {
 */
 void Cancel::reportSuccess(XMLDocument& response) {
     XMLElement* root = response.RootElement();
+
+    //<canceled id="TRANS_ID">
     XMLElement* canceled = response.NewElement("canceled");
     canceled->SetAttribute("id", trans_id);
     for (auto const& order : subOrders) {
@@ -341,12 +352,18 @@ void Cancel::reportSuccess(XMLDocument& response) {
         int shares = order[1].as<int>();
         float price = order[2].as<float>();
         string time = order[3].as<string>();
+
+        //<canceled shares=... time=.../>: only one canceled part
         if (state == "canceled") {
             XMLElement* canceled_part = response.NewElement("canceled");
             canceled_part->SetAttribute("shares", shares);
             canceled_part->SetAttribute("time", time.c_str());
             canceled->InsertEndChild(canceled_part);
-        } else if (state == "executed") {
+        }
+
+        //<executed shares=... price=... time=.../>: maybe 0 or multiple
+        //executed parts
+        else if (state == "executed") {
             XMLElement* executed = response.NewElement("executed");
             executed->SetAttribute("shares", shares);
             executed->SetAttribute("price", price);

@@ -4,6 +4,8 @@
 
 #include "exception.h"
 
+using namespace tinyxml2;
+
 /*
     read sql command from the file and then create tabel using connection *C.
     If fails, it will throw exception.
