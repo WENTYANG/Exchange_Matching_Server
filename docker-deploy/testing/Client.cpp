@@ -13,6 +13,7 @@ using namespace std;
 
 #define MAX_LENGTH 65536
 #define N_Thread_CREATE 3  //用于创建并发送create type的线程数量
+#define N_Thread_TRANS 3 //用于创建并发送transaction type的线程数量
 
 static vector<string> symbolName = {"Byd", "Tesla", "Xpeng", "Nio", "BMW", "ONE"};
 
@@ -28,7 +29,7 @@ void Client::run() {
   for (size_t i = 0; i < N_Thread_CREATE; i++) {
     pthread_t t;
     int res =
-        pthread_create(&t, NULL, _thread_run<Client, &Client::sendCreateRequest>, this);
+        pthread_create(&t, NULL, _thread_run<Client, &Client::sendCreateRequestAndGetResponse>, this);
     if (res < 0) {
       std::cerr << "pthread create error.\n";
       exit(EXIT_FAILURE);
@@ -39,14 +40,28 @@ void Client::run() {
     pthread_join(createThreads[i], NULL);
   }
 
-  //发完create后，生成 threads 发送大量的trans request
-  //TODO
+  // send a batch of TRANSACTION type request (randomly buy symbols, and randomly sell symbols)
+  createThreads.clear();
+  for (size_t i = 0; i < N_Thread_CREATE; i++) {
+    pthread_t t;
+    int res =
+        pthread_create(&t, NULL, _thread_run<Client, &Client::sendTransRequestAndGetResponse>, this);
+    if (res < 0) {
+      std::cerr << "pthread create error.\n";
+      exit(EXIT_FAILURE);
+    }
+    createThreads.push_back(t);
+  }
+  for (size_t i = 0; i < N_Thread_CREATE; i++) {
+    pthread_join(createThreads[i], NULL);
+  }
 }
 
 /*
     send "CREATE" request, which include one create account request, and several create symbol request.
+    Then recv response from sever, save it as xml file.
 */
-void Client::sendCreateRequest() {
+void Client::sendCreateRequestAndGetResponse() {
   pthread_t self = pthread_self();
 
   string XMLrequest = getCreateRequest();
@@ -78,4 +93,12 @@ void Client::sendCreateRequest() {
 */
 string Client::getCreateRequest(){
   //TODO  随机函数在functioins.h已经实现
+}
+
+/*
+    send "TRANSACTION" request, which include several order requests. client will randomy buy symbols, and randomly 
+    sell the symbols. Then recv response from sever, save it as xml file.
+*/
+void Client::sendTransRequestAndGetResponse(){
+
 }

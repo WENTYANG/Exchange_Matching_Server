@@ -32,10 +32,12 @@ class Client {
   Client(string name, string port, int id);
   ~Client() { close(server_fd); }
   void run();
-  void sendCreateRequest();
+  
 
  private:
+  void sendCreateRequestAndGetResponse();
   string getCreateRequest();
+  void sendTransRequestAndGetResponse();
 };
 
 //线程启动函数，声明为模板函数
