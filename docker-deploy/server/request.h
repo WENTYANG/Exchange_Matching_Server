@@ -101,36 +101,42 @@ class Symbol : public SubRequest {
 
 /* ------------------------ "TRANSACTION" Attribute ------------------------ */
 class Order : public SubRequest {
- public:
-  string sym;
-  int amount;
-  float limit;
-  int trans_id;
+   public:
+    string sym;
+    int amount;
+    float limit;
+    int trans_id;
 
- public:
-  Order(int id, string sym, int amount, int limit) :
-      SubRequest(id), sym(sym), amount(amount), limit(limit), trans_id(-1) {}
-  virtual void execute(XMLDocument & response);
-  virtual void printSubRequest() {
-    cout << "Order:" << endl;
-    cout << "sym: " << sym << " amount:" << amount << " limit:" << limit << endl;
-  }
-  virtual void reportSuccess(XMLDocument & response);
-  virtual void reportError(XMLDocument & response, string msg);
+   public:
+    Order(int id, string sym, int amount, int limit)
+        : SubRequest(id),
+          sym(sym),
+          amount(amount),
+          limit(limit),
+          trans_id(-1) {}
+    virtual void execute(XMLDocument& response);
+    virtual void printSubRequest() {
+        cout << "Order:" << endl;
+        cout << "sym: " << sym << " amount:" << amount << " limit:" << limit
+             << endl;
+    }
+    virtual void reportSuccess(XMLDocument& response);
+    virtual void reportError(XMLDocument& response, string msg);
 
- private:
-  bool isValid();
-  void match(int o_trans_id,
-             const string & o_time,
-             int o_amount,
-             float o_limit,
-             int o_account_id,
-             int o_version);
+   private:
+    bool isValid();
+    void match(int o_trans_id,
+               const string& o_time,
+               int o_amount,
+               float o_limit,
+               int o_account_id,
+               int o_version);
 };
 
 class Query : public SubRequest {
    public:
     int trans_id;
+    result query_result; /*the results as (state, amount, price, time)*/
 
    public:
     Query(int accountID, int transId)
@@ -147,6 +153,7 @@ class Query : public SubRequest {
 class Cancel : public SubRequest {
    public:
     int trans_id;
+    result subOrders; /*To store the executed and canceled parts of the order*/
 
    public:
     Cancel(int accountID, int transId)

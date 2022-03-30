@@ -12,33 +12,37 @@ using namespace std;
 using namespace pqxx;
 using namespace tinyxml2;
 
-void createTable(connection * C, const string fileName);
-void dropAllTable(connection * C);
-void addAccount(connection * C, int account_id, float balance);
-void addSymbol(connection * C, const string & sym, int account_id, int num);
-result getEligibleOrders(connection * C, const string & sym, int amount, float limit);
+void createTable(connection* C, const string fileName);
+void dropAllTable(connection* C);
+void addAccount(connection* C, int account_id, float balance);
+void addSymbol(connection* C, const string& sym, int account_id, int num);
+result getEligibleOrders(connection* C,
+                         const string& sym,
+                         int amount,
+                         float limit);
 
-void addOrder(connection * C,
-              int & trans_id,
+void addOrder(connection* C,
+              int& trans_id,
               int amount,
               float limit,
               int account_id,
-              const string & sym,
+              const string& sym,
               string state);
 
-void reduceMoneyOrSymbol(connection * C,
-                         const string & sym,
+void reduceMoneyOrSymbol(connection* C,
+                         const string& sym,
                          int account_id,
                          int amount,
                          float limit);
-void setOrderExecuted(connection * C,
+void setOrderExecuted(connection* C,
                       int o_trans_id,
-                      const string & o_time,
+                      const string& o_time,
                       int o_version);
-void updateOpenOrder(connection * C,
+void updateOpenOrder(connection* C,
                      int o_remain_amount,
                      int o_trans_id,
-                     const string & o_time,
+                     const string& o_time,
                      int o_version);
-result searchOrders(connection * C, int trans_id);
+result searchOrders(connection* C, int trans_id);
+void cancelOrder(connection* C, int trans_id);
 #endif
