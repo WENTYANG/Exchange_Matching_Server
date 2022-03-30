@@ -45,4 +45,6 @@ void updateOpenOrder(connection* C,
                      int o_version);
 result searchOrders(connection* C, int trans_id);
 void cancelOrder(connection* C, int trans_id);
+void executeOrder(connection* C, int account_id, const string& sym, float price, int amount);
+
 #endif

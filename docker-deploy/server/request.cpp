@@ -97,7 +97,7 @@ void Order::execute(XMLDocument& response) {
                 addOrder(C, this->trans_id, this->amount, this->limit,
                          this->account_id, this->sym, "open");
                 reportSuccess(response);
-                cout << "no eligible Orders\n";
+                //cout << "no eligible Orders\n";
                 return;
             }
             for (auto const& order : list) {
@@ -132,7 +132,7 @@ void Order::execute(XMLDocument& response) {
                 }
             }
             if (abs(amount) > 0) {  // remain unmatch portion
-                cout << "remain unmatch portion\n";
+                //cout << "remain unmatch portion\n";
                 addOrder(C, this->trans_id, this->amount, this->limit,
                          this->account_id, this->sym, "open");
             }
@@ -147,7 +147,7 @@ void Order::execute(XMLDocument& response) {
 /*
     Compare the number of both sides. One with smaller amount
    becomes executed. The other with larger amount will modify its amount and
-   spilt a sub-order.
+   spilt a sub-order. Then executed orders for both sides.
 */
 void Order::match(int o_trans_id,
                   const string& o_time,
@@ -160,23 +160,23 @@ void Order::match(int o_trans_id,
     char myStatus = amount > 0 ? 'B' : 'S';
 
     if (myAmount >= opponentAmount) {
-        setOrderExecuted(
-            C, o_trans_id, o_time,
-            o_version);  //将对方订单整个设置为executed（primary key located）
-        addOrder(C, this->trans_id, -1 * o_amount, o_limit, this->account_id,
-                 this->sym,
-                 "executed");  // 插入一个我的executed订单，amount为部分成交额
+        setOrderExecuted(C, o_trans_id, o_time, o_version);  // 将对方订单整个设置为executed（primary key located）
+        addOrder(C, this->trans_id, -1 * o_amount, o_limit, this->account_id, this->sym, "executed");  // 插入一个我的executed订单，amount为部分成交额
+
+        int myExecutedAmount = myStatus == 'B'? opponentAmount : -1 * opponentAmount;
+        executeOrder(C,this->account_id, this->sym, o_limit, myExecutedAmount); // 执行我的订单
+        executeOrder(C, o_account_id, this->sym, o_limit, o_amount); // 执行对方的订单
         myAmount -= opponentAmount;
     } else {
         int o_remain_amount = myStatus == 'B' ? -1 * (opponentAmount - myAmount)
                                               : (opponentAmount - myAmount);
-        updateOpenOrder(C, o_remain_amount, o_trans_id, o_time,
-                        o_version);  // 更新对方订单，amount调整为剩余数量
-        addOrder(C, this->trans_id, this->amount, o_limit, this->account_id,
-                 this->sym,
-                 "executed");  // 插入一个我的executed订单，amount为全部成交额
-        addOrder(C, o_trans_id, -1 * this->amount, o_limit, o_account_id,
-                 this->sym, "executed");  // 插入一个对方部分成交的executed订单
+        updateOpenOrder(C, o_remain_amount, o_trans_id, o_time, o_version);  // 更新对方订单，amount调整为剩余数量
+        addOrder(C, this->trans_id, this->amount, o_limit, this->account_id, this->sym, "executed");  // 插入一个我的executed订单，amount为全部成交额
+        addOrder(C, o_trans_id, -1 * this->amount, o_limit, o_account_id, this->sym, "executed");  // 插入一个对方部分成交的executed订单
+
+        int opponentExecutedAmount = myStatus == 'B'? -1 * myAmount : myAmount;
+        executeOrder(C, this->account_id, this->sym, o_limit, this->amount); // 执行我的订单
+        executeOrder(C, o_account_id, this->sym, o_limit, opponentExecutedAmount);  //执行对面的订单
         myAmount = 0;
     }
 
