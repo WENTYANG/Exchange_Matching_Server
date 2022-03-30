@@ -187,9 +187,11 @@ void Order::match(int o_trans_id,
     Validate the order, throws exception if the order is invalid. An order is
    invalid if: 1) The account id doesn't exist 2) There is not enough money on
    the account for a buy order 3) There is not enough shares of symbol on the
-   account for a sell order
+   account for a sell order. 
+   Return the related version number through reference. If it is a sell order, return related version number in SYMBOL table,
+   else return realted verion number in ACCOUNT table
 */
-bool Order::isValid() {
+bool Order::isValid(int& version) {
     nontransaction N(*C);
     // Account id exists
     stringstream sql;

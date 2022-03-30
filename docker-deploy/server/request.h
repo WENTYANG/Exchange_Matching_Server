@@ -124,7 +124,7 @@ class Order : public SubRequest {
     virtual void reportError(XMLDocument& response, string msg);
 
    private:
-    bool isValid();
+    bool isValid(int& version);
     void match(int o_trans_id,
                const string& o_time,
                int o_amount,
