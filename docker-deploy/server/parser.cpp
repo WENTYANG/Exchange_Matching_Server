@@ -97,7 +97,7 @@ Request* parse_trans(XMLDocument* xml) {
 /*
 Get the content length on the first row of the request
 */
-int getContentLength(string data) {
+int getContentLength(const string& data) {
     size_t firstLine = data.find('\n', 0);
     return stoi(data.substr(0, firstLine));
 }

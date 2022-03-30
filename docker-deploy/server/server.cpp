@@ -109,7 +109,7 @@ void Server::recvRequest(int client_fd, string & wholeRequest) {
   }
   string firstRequest(buffer.data(), len);
 
-  // int contentLength = getContentLength(firstRequest);
+  int contentLength = getContentLength(firstRequest);
   wholeRequest = firstRequest;
   int remainReceiveLen = contentLength - firstRequest.length();
   int receiveLen = 0;
