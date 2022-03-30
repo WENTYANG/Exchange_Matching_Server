@@ -5,7 +5,7 @@
   <order sym="USA" amount="300" limit="2"/>
   <!--卖出，第一笔和第三笔不合法返回error，第二笔合法，A被扣除300个USA，同时会匹配上之前的第2个购买订单-->
   <order sym="Duke" amount="-500" limit="1"/>
-  <order sym="USA" amount="-300" limit="1"/>
+  <order sym="USA" amount="-200" limit="1"/>
   <order sym="Duck" amount="-500" limit="1"/>
   <!--购买，A余额不足，不合法-->
   <order sym="Duke" amount="200" limit="3"/>

@@ -1,0 +1,11 @@
+<transactions id="1">
+  <!--取消部分执行的第2笔订单-->
+  <cancel id="2"/>
+  <!--取消未执行的第1, 4笔订单-->
+  <cancel id="1"/>
+  <cancel id="4"/>
+  <!--取消已完成的第3笔订单，报错-->
+  <cancel id="3"/>
+  <!--取消不存在的第5笔订单，报错-->
+  <cancel id="5"/>
+</transactions>
