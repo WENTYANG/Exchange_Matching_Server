@@ -183,7 +183,7 @@ void updateOpenOrder(connection * C,
   work W(*C);
   string sql = "UPDATE ORDERS SET AMONUT = " + to_string(o_remain_amount) +
                ", VERSION = " + to_string(o_version + 1) +
-               " WHRER TRANS_ID = " + to_string(o_trans_id) +
+               " WHERE TRANS_ID = " + to_string(o_trans_id) +
                " AND TIME = " + W.quote(o_time) +
                " AND VERSION = " + to_string(o_version) + ";";
   W.exec(sql.c_str());
