@@ -61,6 +61,18 @@ class Request {
             delete (ptr);
     }
 
+    virtual string getResponseStr() {
+        // Convert XMLDocument to string
+        XMLPrinter printer;
+        response.Print(&printer);
+        string responseStr = printer.CStr();
+
+        // Add the length of request to the head of string
+        size_t size = sizeof(char) * (responseStr.length() + 1);
+        responseStr = to_string(size) + '\n' + responseStr;
+        return responseStr;
+    }
+
     // for test
     virtual void saveResponse() {
         response.SaveFile("test-response.xml");
