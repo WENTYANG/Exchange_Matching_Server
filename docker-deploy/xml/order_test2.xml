@@ -1,0 +1,6 @@
+<transactions id="1">
+  <!--account1有100个Duke，400个USA，balance为1000-->
+  <!--account2的balance为1000-->
+  <!--account1挂一个卖出30个duke的卖单，用10块钱卖-->
+  <order sym="Duke" amount="-30" limit="10"/>
+</transactions>

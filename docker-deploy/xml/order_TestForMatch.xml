@@ -3,9 +3,3 @@
   <order sym="SUSI" amount="-100" limit="10"/>
   <order sym="SUSI" amount="100" limit="10"/>
 </transactions>
-
-<transactions id="2">
-  <!--account_ID:1 卖出SUSHI,然后买入SUSHI-->
-  <order sym="SUSI" amount="-100" limit="10"/>
-  <order sym="SUSI" amount="100" limit="10"/>
-</transactions>

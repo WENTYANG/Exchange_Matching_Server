@@ -271,29 +271,13 @@ void cancelOrder(connection* C, int trans_id) {
 
     if (canceled_amount > 0) {
         // Buy: refund money to buyer
-        // Select all the executed parts of the order to compute the
-        sql.clear();
-        sql.str("");
-        sql << "SELECT AMOUNT, LIMIT_PRICE, ACCOUNT_ID FROM ORDERS "
-               "WHERE "
-               "TRANS_ID="
-            << trans_id << " AND STATE =" << W.quote("executed") << ";";
-        result selectRes(W.exec(sql.str()));
-        int total_amount = canceledRes[0][0].as<int>();
-        float money_paid = 0;
+        int canceled_amount = canceledRes[0][0].as<int>();
         float original_price = canceledRes[0][1].as<float>();
-        // refund = total_amount * original_price - money_paid
-        for (const auto& order : selectRes) {
-            int amount = order[0].as<int>();
-            float price = order[1].as<float>();
-            money_paid += price;
-            total_amount += amount;
-        }
-        float refund = total_amount * original_price - money_paid;
+        float refund = canceled_amount * original_price;
         sql.clear();
         sql.str("");
         sql << "UPDATE ACCOUNT SET BALANCE=ACCOUNT.BALANCE+" << refund
-            << " WHERE ACCOUNT_ID=" << account_id << ";";
+            << ", VERSION = ACCOUNT.VERSION+1 WHERE ACCOUNT_ID=" << account_id << ";";
         W.exec(sql.str());
     } else {
         // Sell: refund symbol to seller
@@ -342,5 +326,18 @@ void executeOrder(connection* C,
             << ";";
         W.exec(sql.str());
     }
+    W.commit();
+}
+
+
+/*
+    refund specific amount of money to given account
+*/
+void refund(connection* C, float diff, int amount, int account_id){
+    work W(*C);
+    stringstream sql;
+    sql << "UPDATE ACCOUNT SET BALANCE=ACCOUNT.BALANCE+" << diff*amount
+            << ", VERSION = ACCOUNT.VERSION+1 WHERE ACCOUNT_ID=" << account_id << ";";
+    W.exec(sql.str());
     W.commit();
 }

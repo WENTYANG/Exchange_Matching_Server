@@ -51,5 +51,6 @@ void executeOrder(connection* C,
                   const string& sym,
                   float price,
                   int amount);
+void refund(connection* C, float diff, int amount, int account_id);
 
 #endif

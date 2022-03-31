@@ -1,0 +1,8 @@
+<transactions id="2">
+  <!--account1有100个Duke，400个USA，balance为1000-->
+  <!--account2的balance为1000-->
+  <!--account2挂一个买入50个duke的买单，用20块钱买，扣1000元，匹配到30的卖单，花300元买，退款300元-->
+  <order sym="Duke" amount="50" limit="20"/>
+  <!--cancel第二笔订单剩余的20个买入，应该退款400元-->
+  <cancel id="2"/>
+</transactions>

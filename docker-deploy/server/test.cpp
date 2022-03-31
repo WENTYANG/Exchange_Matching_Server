@@ -147,8 +147,26 @@ void testCancel() {
     cout << res;
 }
 
+void testRefund(){
+    Server s("12345");
+    s.connectDB("exchange_server", "postgres", "passw0rd");
+    string xml = getXMLbyString("../xml/create2.xml");
+
+    Request* req = getParsed(xml);
+    req->executeRequest();
+
+    xml = getXMLbyString("../xml/order_test2.xml"); //挂卖单
+    req = getParsed(xml);
+    req->executeRequest();
+    
+    xml = getXMLbyString("../xml/order_test3.xml"); //挂买单
+    req = getParsed(xml);
+    req->executeRequest();
+    req->saveResponse();
+}
+
 int main() {
-    testCancel();
+    testRefund();
     return 0;
 }
 

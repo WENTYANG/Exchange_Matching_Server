@@ -118,11 +118,8 @@ void Order::execute(XMLDocument& response) {
                 string o_time = order[6].as<string>();
 
                 if (amount > 0) {  // buy order
-                    if (limit - o_limit > 1e-6 ||
-                        abs(limit - o_limit) <
-                            1e-6) {  // match successfully(>=)
-                        match(o_trans_id, o_time, o_amount, o_limit,
-                              o_account_id, o_version);
+                    if (limit - o_limit > 1e-6 ||abs(limit - o_limit) < 1e-6) {  // match successfully(>=)
+                        match(o_trans_id, o_time, o_amount, o_limit,o_account_id, o_version);
                     } else {  // match unsuccessfully.
                         break;
                     }
@@ -182,6 +179,9 @@ void Order::match(int o_trans_id,
                      myExecutedAmount);  // 执行我的订单
         executeOrder(C, o_account_id, this->sym, o_limit,
                      o_amount);  // 执行对方的订单
+        if(this->limit - o_limit > 1e-6){   // 我是买单时，对成交差价部分进行退款
+            refund(C, this->limit-o_limit, opponentAmount, this->account_id);
+        }
         myAmount -= opponentAmount;
     } else {
         int o_remain_amount = myStatus == 'B' ? -1 * (opponentAmount - myAmount)
@@ -199,6 +199,9 @@ void Order::match(int o_trans_id,
                      this->amount);  // 执行我的订单
         executeOrder(C, o_account_id, this->sym, o_limit,
                      opponentExecutedAmount);  //执行对面的订单
+        if(this->limit - o_limit > 1e-6){   // 我是买单时，对成交差价部分进行退款
+            refund(C, this->limit-o_limit, myAmount, this->account_id);
+        }
         myAmount = 0;
     }
 
