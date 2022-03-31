@@ -13,9 +13,15 @@
 #include "tinyxml2.h"
 
 #define MAX_LENGTH 65536
+<<<<<<< HEAD
 #define N_Thread_CREATE 5  //用于创建并发送create type的线程数量
 #define N_Thread_TRANS 20    //用于创建并发送transaction type的线程数量
 #define NUM_SYMBOL 2        //每个Create Request中添加的symbol数量
+=======
+#define N_Thread_CREATE 2  //用于创建并发送create type的线程数量
+#define N_Thread_TRANS 3  //用于创建并发送transaction type的线程数量
+#define NUM_SYMBOL 2      //每个Create Request中添加的symbol数量
+>>>>>>> 257292ec7f7bde540cbc00088a1ff45d6bb0796c
 #define INITIAL_SYMBOL_AMOUNT 100  //每个symbol的初始amount
 #define INITIAL_BALANCE 1000.0     // account的初始balance
 #define NUM_ORDER 2  //每个account分别发送buy和sell的数量 (共NUM_ORDER*2个order)
