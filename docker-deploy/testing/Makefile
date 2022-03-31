@@ -1,9 +1,9 @@
 EXTRAFLAGS=-lpthread
 
-all: test
+all: client
 
-test: ../server/socket.h ../server/exception.h ../server/tinyxml2.h
-	g++ -o test client.cpp ../server/socket.cpp -I ../server/
+client:  Client.h ../server/socket.h ../server/exception.h ../server/tinyxml2.h 
+	g++ -o client main.cpp Client.cpp functions.cpp ../server/socket.cpp ../server/tinyxml2.cpp 	-I ../server/ $(EXTRAFLAGS)
 
 unittest:  ../server/socket.h ../server/exception.h ../server/tinyxml2.h Client.cpp test.cpp functions.cpp
 	g++ -o unittest test.cpp Client.cpp functions.cpp ../server/socket.cpp ../server/tinyxml2.cpp -I ../server/ $(EXTRAFLAGS)
@@ -11,4 +11,4 @@ unittest:  ../server/socket.h ../server/exception.h ../server/tinyxml2.h Client.
 .PHONY:
 	clean
 clean:
-	rm -rf *.o  test unittest
+	rm -rf *.o  client unittest

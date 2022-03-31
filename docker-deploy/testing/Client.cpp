@@ -37,7 +37,7 @@ void Client::run() {
   for (size_t i = 0; i < N_Thread_CREATE; i++) {
     pthread_t t;
     int res =
-        pthread_create(&t, NULL, _thread_run<Client, &Client::sendCreateRequestAndGetResponse>, this);
+        pthread_create(&t, NULL, _thread_run<Client, 1>, this);
     if (res < 0) {
       std::cerr << "pthread create error.\n";
       exit(EXIT_FAILURE);
@@ -53,7 +53,7 @@ void Client::run() {
   for (size_t i = 0; i < N_Thread_CREATE; i++) {
     pthread_t t;
     int res =
-        pthread_create(&t, NULL, _thread_run<Client, &Client::sendTransRequestAndGetResponse>, this);
+        pthread_create(&t, NULL, _thread_run<Client, 2>, this);
     if (res < 0) {
       std::cerr << "pthread create error.\n";
       exit(EXIT_FAILURE);
@@ -139,7 +139,8 @@ string Client::getCreateRequest() {
 }
 
 /*
-  Given an XMLDocument object, add an account node under its root
+  Given an XMLDocument object, add an account node under its root. 
+  This is a helper function of Client::getCreateRequest()
 */
 void createAccount(int account_id, float balance, XMLDocument& request) {
     //<account id="ACCOUNT_ID" balance="BALANCE"/>
@@ -151,18 +152,19 @@ void createAccount(int account_id, float balance, XMLDocument& request) {
 }
 
 /*
-  Given an XMLDocument object, add a symbol node under its root
+  Given an XMLDocument object, add a symbol node under its root.
+  This is a helper function of Client::getCreateRequest()
 */
 void createSymbol(string sym,
                   int account_id,
                   int amount,
                   XMLDocument& request) {
-    //<symbol sym="SYM">
+    // <symbol sym="SYM">
     XMLElement* root = request.RootElement();
     XMLElement* symbol = request.NewElement("symbol");
     symbol->SetAttribute("sym", sym.c_str());
 
-    //   <account id="ACCOUNT_ID">NUM</account>
+    // <account id="ACCOUNT_ID">NUM</account>
     XMLElement* account = request.NewElement("account");
     account->SetAttribute("id", account_id);
     XMLText* NUM = request.NewText(to_string(amount).c_str());
