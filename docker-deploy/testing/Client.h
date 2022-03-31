@@ -23,7 +23,7 @@ class Args {
   
  public:
   Args(string name, string port, int id) :
-      serverName(name.c_str()), serverPort(port.c_str()), account_id(id) {}
+      serverName(name), serverPort(port), account_id(id) {}
   ~Args() {}
 };
 
@@ -32,7 +32,7 @@ class Client {
   int account_id;
   int server_fd;
   float balance;
-  unordered_map<string, int> symbol; /*symbols:amount owned by this client*/
+  unordered_map<string, int> symbol; // symbols:amount owned by this client
 
  private:
   template<typename TYPE, int C>  //线程启动函数，声明为模板函数
