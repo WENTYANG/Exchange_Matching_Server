@@ -122,3 +122,10 @@ void Server::recvRequest(int client_fd, string & wholeRequest) {
     receiveLen += len;
   }
 }
+
+void Server::sendResponse(int client_fd, const string & XMLresponse) {
+  int res = send(client_fd, &(XMLresponse.data()[0]), XMLresponse.length(), 0);
+  if (res <= 0){
+    throw MyException("fail to send back response.\n");
+  }
+}
