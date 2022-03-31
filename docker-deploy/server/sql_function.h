@@ -33,7 +33,8 @@ void reduceMoneyOrSymbol(connection* C,
                          const string& sym,
                          int account_id,
                          int amount,
-                         float limit);
+                         float limit,
+                         const int& version);
 void setOrderExecuted(connection* C,
                       int o_trans_id,
                       const string& o_time,
@@ -45,6 +46,10 @@ void updateOpenOrder(connection* C,
                      int o_version);
 result searchOrders(connection* C, int trans_id);
 void cancelOrder(connection* C, int trans_id);
-void executeOrder(connection* C, int account_id, const string& sym, float price, int amount);
+void executeOrder(connection* C,
+                  int account_id,
+                  const string& sym,
+                  float price,
+                  int amount);
 
 #endif
