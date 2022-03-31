@@ -136,14 +136,14 @@ void Server::sendResponse(int client_fd, const string & XMLresponse) {
   the connection* C. It will throw an exception if fails. 
 */
 connection * Server::connectDB(string dbName, string userName, string password) {
-  printf("Connect to %s with User: %s, using Password: %s\n",
-         dbName.c_str(),
-         userName.c_str(),
-         password.c_str());
+  // printf("Connect to %s with User: %s, using Password: %s\n",
+  //        dbName.c_str(),
+  //        userName.c_str(),
+  //        password.c_str());
   connection * C =
       new connection("dbname=" + dbName + " user=" + userName + " password=" + password);
   if (C->is_open()) {
-    cout << "Opened database successfully: " << C->dbname() << endl;
+    // cout << "Opened database successfully: " << C->dbname() << endl;
   }
   else {
     throw MyException("Can't open database.");

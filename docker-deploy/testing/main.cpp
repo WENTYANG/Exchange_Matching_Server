@@ -2,8 +2,9 @@
 
 #include "Client.h"
 #include "exception.h"
+#include<time.h>
 
-#define N_client 2  //生成的client数量
+#define N_client 100  //生成的client数量
 
 void checkInput(int argc, char * argv[], string & masterName, string & masterPort);
 void * initializeClient(void * ptr);
@@ -13,6 +14,9 @@ int main(int argc, char * argv[]) {
   string serverName;
   string serverPort;
   checkInput(argc, argv, serverName, serverPort);
+
+  clock_t start,end;
+  start = clock();
 
   // generate clients
   vector<pthread_t> threads;
@@ -29,7 +33,8 @@ int main(int argc, char * argv[]) {
   for (size_t i = 0; i < N_client; i++) {
     pthread_join(threads[i], NULL);
   }
-
+  end=clock();
+  cout<<"run time:"<< (double)(end-start)/CLOCKS_PER_SEC <<"s.\n";
   return 0;
 }
 
