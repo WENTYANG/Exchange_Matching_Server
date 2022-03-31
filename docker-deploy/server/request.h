@@ -6,9 +6,10 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+#include <pqxx/pqxx>
 
 #include "exception.h"
-#include "sql_function.h"
+//#include "sql_function.h"
 #include "tinyxml2.h"
 
 #define CREATE 1
@@ -16,6 +17,7 @@
 
 using namespace std;
 using namespace tinyxml2;
+using namespace pqxx;
 
 /* ------------------------ Abstract Request ------------------------ */
 class SubRequest {
@@ -25,7 +27,7 @@ class SubRequest {
    public:
     SubRequest(int id) : account_id(id) {}
     virtual ~SubRequest(){};
-    virtual void execute(XMLDocument& response) = 0;
+    virtual void execute(XMLDocument& response, connection* C) = 0;
     virtual void printSubRequest() = 0;
     virtual void reportSuccess(XMLDocument& response) = 0;
     virtual void reportError(XMLDocument& response, string msg) = 0;
@@ -42,9 +44,9 @@ class Request {
             ptr->printSubRequest();
         }
     }
-    virtual void executeRequest() {
+    virtual void executeRequest(connection* C) {
         for (SubRequest* ptr : subRequests) {
-            ptr->execute(response);
+            ptr->execute(response, C);
         }
     }
     Request() {
@@ -87,7 +89,7 @@ class Account : public SubRequest {
 
    public:
     Account(int id, int balance) : SubRequest(id), balance(balance) {}
-    virtual void execute(XMLDocument& response);
+    virtual void execute(XMLDocument& response, connection* C);
     virtual void reportSuccess(XMLDocument& response);
     virtual void reportError(XMLDocument& response, string msg);
     virtual void printSubRequest() {
@@ -102,7 +104,7 @@ class Symbol : public SubRequest {
 
    public:
     Symbol(string sym, int id, int n) : SubRequest(id), sym(sym), num(n) {}
-    virtual void execute(XMLDocument& response);
+    virtual void execute(XMLDocument& response, connection* C);
     virtual void reportSuccess(XMLDocument& response);
     virtual void reportError(XMLDocument& response, string msg);
     virtual void printSubRequest() {
@@ -126,7 +128,7 @@ class Order : public SubRequest {
           amount(amount),
           limit(limit),
           trans_id(-1) {}
-    virtual void execute(XMLDocument& response);
+    virtual void execute(XMLDocument& response, connection* C);
     virtual void printSubRequest() {
         cout << "Order:" << endl;
         cout << "sym: " << sym << " amount:" << amount << " limit:" << limit
@@ -136,8 +138,9 @@ class Order : public SubRequest {
     virtual void reportError(XMLDocument& response, string msg);
 
    private:
-    bool isValid(int& version);
-    void match(int o_trans_id,
+    bool isValid(int& version, connection* C);
+    void match(connection* C,
+               int o_trans_id,
                const string& o_time,
                int o_amount,
                float o_limit,
@@ -153,7 +156,7 @@ class Query : public SubRequest {
    public:
     Query(int accountID, int transId)
         : SubRequest(accountID), trans_id(transId) {}
-    virtual void execute(XMLDocument& response);
+    virtual void execute(XMLDocument& response, connection* C);
     virtual void printSubRequest() {
         cout << "Query:" << endl;
         cout << trans_id << endl;
@@ -170,7 +173,7 @@ class Cancel : public SubRequest {
    public:
     Cancel(int accountID, int transId)
         : SubRequest(accountID), trans_id(transId) {}
-    virtual void execute(XMLDocument& response);
+    virtual void execute(XMLDocument& response, connection* C);
     virtual void printSubRequest() {
         cout << "Cancel:" << endl;
         cout << trans_id << endl;

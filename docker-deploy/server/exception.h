@@ -18,4 +18,16 @@ class MyException : public exception {
   string message;
 };
 
+class VersionErrorException : public exception {
+ public:
+  VersionErrorException() : message("Sql transaction fail. Beacuse:  ") {}
+  VersionErrorException(string str) : message("Sql transaction fail. Beacuse:  " + str) {}
+  ~VersionErrorException() throw() {}
+
+  virtual const char * what() const throw() { return message.c_str(); }
+
+ private:
+  string message;
+};
+
 #endif

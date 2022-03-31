@@ -18,23 +18,49 @@
 
 using namespace pqxx;
 
-extern connection * C;
+// Encapsulation parameters for passing parameters to the thread startup function
+class Thread_args {
+ public:
+  void * This;
+  void * arg_1;
+
+ public:
+  Thread_args() : This(nullptr), arg_1(nullptr) {}
+  Thread_args(void * t, void * arg1) : This(t), arg_1(arg1) {}
+};
 
 class Server {
  private:
   string portNum;
 
+ private:
+  template<typename TYPE, typename CLASS_TYPE, int C>  //线程启动函数，声明为模板函数
+  static void * _thread_run(void * param) {
+    TYPE* ptr = (TYPE*) param;
+    CLASS_TYPE * This = (CLASS_TYPE *)ptr->This;  //传入的是object的this指针，用于启动非静态成员函数
+    if (C == 1) {
+      This->handleRequest(ptr->arg_1);
+    }
+
+    delete ptr;
+    return nullptr;
+  }
+
  public:
   Server(string port) : portNum(port) {}
   ~Server() {}
   void run();
-  void connectDB(string dbName, string userName, string password);
-  static void* handleRequest(void * info);
+  void handleRequest(void * info);
+
+ public:
+  static connection * connectDB(string dbName, string userName, string password);
+  static void disConnectDB(connection * C);
 
  private:
-  void recvRequest(int client_fd, string& wholeRequest);
-  static void sendResponse(int client_fd, const string& XMLresponse);
+  void recvRequest(int client_fd, string & wholeRequest);
+  void sendResponse(int client_fd, const string & XMLresponse);
+  void initializeDB(connection * C);
+  void cleanResource(connection * C, ClientInfo * info);
 };
-
 
 #endif

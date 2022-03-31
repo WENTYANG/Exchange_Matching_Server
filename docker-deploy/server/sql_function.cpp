@@ -68,7 +68,7 @@ void addSymbol(connection* C, const string& sym, int account_id, int num) {
         << "," << W.quote(sym) << "," << num
         << ") ON CONFLICT ON CONSTRAINT symbol_pk DO UPDATE SET AMOUNT = "
         << num << "+"
-        << "SYMBOL.AMOUNT"
+        << "SYMBOL.AMOUNT, VERSION = SYMBOL.VERSION + 1"
         << ";";
     W.exec(sql.str());
     W.commit();
@@ -170,9 +170,8 @@ void reduceMoneyOrSymbol(connection* C,
     result R(W.exec(sql.str()));
     result::size_type rows = R.affected_rows();
     if (rows == 0) {
-        throw MyException(
-            "The version of the validation information of the order is "
-            "outdated!");
+        throw VersionErrorException(
+            "Invalid update: version of this order does not match.\n");
     }
     W.commit();
 }
@@ -194,7 +193,7 @@ void setOrderExecuted(connection* C,
     result Updates(W.exec(sql.c_str()));
     result::size_type rows = Updates.affected_rows();
     if (rows == 0) {
-        throw MyException(
+        throw VersionErrorException(
             "Invalid update: version of this order does not match.\n");
     }
     W.commit();
@@ -219,7 +218,7 @@ void updateOpenOrder(connection* C,
     result Updates(W.exec(sql.c_str()));
     result::size_type rows = Updates.affected_rows();
     if (rows == 0) {
-        throw MyException(
+        throw VersionErrorException(
             "Invalid update: version of this order does not match.\n");
     }
     W.commit();
