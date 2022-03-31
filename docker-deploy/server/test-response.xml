@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <results>
     <canceled id="2">
-        <canceled shares="100" time="2022-03-30 14:49:14.631109"/>
-        <executed shares="200" price="2" time="2022-03-30 14:49:14.637391"/>
+        <canceled shares="100" time="2022-03-30 21:58:31.743837"/>
+        <executed shares="200" price="2" time="2022-03-30 21:58:31.747664"/>
     </canceled>
     <canceled id="1">
-        <canceled shares="200" time="2022-03-30 14:49:14.628188"/>
+        <canceled shares="200" time="2022-03-30 21:58:31.741138"/>
     </canceled>
     <canceled id="4">
-        <canceled shares="-100" time="2022-03-30 14:49:14.639639"/>
+        <canceled shares="100" time="2022-03-30 21:58:31.750726"/>
+        <executed shares="100" price="3" time="2022-03-30 21:58:31.7539"/>
     </canceled>
     <error id="3">Error : Invalid cancel: Trans_id doesn't exist or the order has been fully executed</error>
     <error id="5">Error : Invalid cancel: Trans_id doesn't exist or the order has been fully executed</error>

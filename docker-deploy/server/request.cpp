@@ -80,13 +80,22 @@ void Symbol::reportError(XMLDocument& response, string msg) {
 /* ------------------------ "Order" Function ------------------------ */
 void Order::execute(XMLDocument& response) {
     // check the validity of the order.
+    int version;
     try {
-        isValid();
+        isValid(version);
     } catch (const std::exception& e) {
         reportError(response, e.what());
         return;
     }
-    reduceMoneyOrSymbol(C, sym, account_id, amount, limit);
+
+    while (1) {
+        try {
+            reduceMoneyOrSymbol(C, sym, account_id, amount, limit, version);
+            break;
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << '\n';
+        }
+    }
 
     // get possible orders and then try to match. using optimistic lock and roll
     // back to control version.
@@ -97,7 +106,7 @@ void Order::execute(XMLDocument& response) {
                 addOrder(C, this->trans_id, this->amount, this->limit,
                          this->account_id, this->sym, "open");
                 reportSuccess(response);
-                //cout << "no eligible Orders\n";
+                // cout << "no eligible Orders\n";
                 return;
             }
             for (auto const& order : list) {
@@ -132,7 +141,7 @@ void Order::execute(XMLDocument& response) {
                 }
             }
             if (abs(amount) > 0) {  // remain unmatch portion
-                //cout << "remain unmatch portion\n";
+                // cout << "remain unmatch portion\n";
                 addOrder(C, this->trans_id, this->amount, this->limit,
                          this->account_id, this->sym, "open");
             }
@@ -160,23 +169,36 @@ void Order::match(int o_trans_id,
     char myStatus = amount > 0 ? 'B' : 'S';
 
     if (myAmount >= opponentAmount) {
-        setOrderExecuted(C, o_trans_id, o_time, o_version);  // 将对方订单整个设置为executed（primary key located）
-        addOrder(C, this->trans_id, -1 * o_amount, o_limit, this->account_id, this->sym, "executed");  // 插入一个我的executed订单，amount为部分成交额
+        setOrderExecuted(
+            C, o_trans_id, o_time,
+            o_version);  // 将对方订单整个设置为executed（primary key located）
+        addOrder(C, this->trans_id, -1 * o_amount, o_limit, this->account_id,
+                 this->sym,
+                 "executed");  // 插入一个我的executed订单，amount为部分成交额
 
-        int myExecutedAmount = myStatus == 'B'? opponentAmount : -1 * opponentAmount;
-        executeOrder(C,this->account_id, this->sym, o_limit, myExecutedAmount); // 执行我的订单
-        executeOrder(C, o_account_id, this->sym, o_limit, o_amount); // 执行对方的订单
+        int myExecutedAmount =
+            myStatus == 'B' ? opponentAmount : -1 * opponentAmount;
+        executeOrder(C, this->account_id, this->sym, o_limit,
+                     myExecutedAmount);  // 执行我的订单
+        executeOrder(C, o_account_id, this->sym, o_limit,
+                     o_amount);  // 执行对方的订单
         myAmount -= opponentAmount;
     } else {
         int o_remain_amount = myStatus == 'B' ? -1 * (opponentAmount - myAmount)
                                               : (opponentAmount - myAmount);
-        updateOpenOrder(C, o_remain_amount, o_trans_id, o_time, o_version);  // 更新对方订单，amount调整为剩余数量
-        addOrder(C, this->trans_id, this->amount, o_limit, this->account_id, this->sym, "executed");  // 插入一个我的executed订单，amount为全部成交额
-        addOrder(C, o_trans_id, -1 * this->amount, o_limit, o_account_id, this->sym, "executed");  // 插入一个对方部分成交的executed订单
+        updateOpenOrder(C, o_remain_amount, o_trans_id, o_time,
+                        o_version);  // 更新对方订单，amount调整为剩余数量
+        addOrder(C, this->trans_id, this->amount, o_limit, this->account_id,
+                 this->sym,
+                 "executed");  // 插入一个我的executed订单，amount为全部成交额
+        addOrder(C, o_trans_id, -1 * this->amount, o_limit, o_account_id,
+                 this->sym, "executed");  // 插入一个对方部分成交的executed订单
 
-        int opponentExecutedAmount = myStatus == 'B'? -1 * myAmount : myAmount;
-        executeOrder(C, this->account_id, this->sym, o_limit, this->amount); // 执行我的订单
-        executeOrder(C, o_account_id, this->sym, o_limit, opponentExecutedAmount);  //执行对面的订单
+        int opponentExecutedAmount = myStatus == 'B' ? -1 * myAmount : myAmount;
+        executeOrder(C, this->account_id, this->sym, o_limit,
+                     this->amount);  // 执行我的订单
+        executeOrder(C, o_account_id, this->sym, o_limit,
+                     opponentExecutedAmount);  //执行对面的订单
         myAmount = 0;
     }
 
@@ -187,15 +209,17 @@ void Order::match(int o_trans_id,
     Validate the order, throws exception if the order is invalid. An order is
    invalid if: 1) The account id doesn't exist 2) There is not enough money on
    the account for a buy order 3) There is not enough shares of symbol on the
-   account for a sell order. 
-   Return the related version number through reference. If it is a sell order, return related version number in SYMBOL table,
-   else return realted verion number in ACCOUNT table
+   account for a sell order.
+   Return the related version number through reference. If it is a sell order,
+   return related version number in SYMBOL table, else return realted verion
+   number in ACCOUNT table
 */
 bool Order::isValid(int& version) {
     nontransaction N(*C);
     // Account id exists
     stringstream sql;
-    sql << "SELECT BALANCE FROM ACCOUNT WHERE ACCOUNT_ID=" << account_id << ";";
+    sql << "SELECT BALANCE, VERSION FROM ACCOUNT WHERE ACCOUNT_ID="
+        << account_id << ";";
     result B(N.exec(sql.str()));
     if (B.empty()) {
         throw MyException("Invalid Account");
@@ -209,14 +233,16 @@ bool Order::isValid(int& version) {
         if (B[0][0].as<float>() < amount * limit) {
             throw MyException("Insufficient balance on buyer's account");
         }
+        version = B[0][1].as<int>();
     } else if (amount < 0) {
         // For sell order, ensure enough symbol on account
-        sql << "SELECT AMOUNT FROM SYMBOL WHERE ACCOUNT_ID=" << account_id
-            << " AND SYM=" << N.quote(sym) << ";";
+        sql << "SELECT AMOUNT, VERSION FROM SYMBOL WHERE ACCOUNT_ID="
+            << account_id << " AND SYM=" << N.quote(sym) << ";";
         result S(N.exec(sql.str()));
         if (S.empty() || S[0][0].as<int>() < -amount) {
             throw MyException("Insufficient symbol on seller's Account");
         }
+        version = S[0][1].as<int>();
     } else {
         throw MyException("Invalid amount: amount cannot be 0");
     }
@@ -364,7 +390,7 @@ void Cancel::reportSuccess(XMLDocument& response) {
         }
 
         //<executed shares=... price=... time=.../>: maybe 0 or multiple
-        //executed parts
+        // executed parts
         else if (state == "executed") {
             XMLElement* executed = response.NewElement("executed");
             executed->SetAttribute("shares", shares);

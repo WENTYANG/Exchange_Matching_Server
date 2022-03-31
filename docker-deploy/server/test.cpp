@@ -143,7 +143,8 @@ void testCancel() {
 
     req = getParsed(xml);
     req->executeRequest();
-    req->saveResponse();
+    string res = req->getResponseStr();
+    cout << res;
 }
 
 int main() {
