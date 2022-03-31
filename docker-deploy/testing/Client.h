@@ -38,6 +38,8 @@ class Client {
     unordered_map<string, int> symbol; /*symbols:amount owned by this client*/
 
    private:
+    void sendTransRequestAndGetResponse();
+    void sendCreateRequestAndGetResponse();
     string getCreateRequest();
 
    public:
@@ -45,12 +47,12 @@ class Client {
     ~Client() { close(server_fd); }
     void run();
     void sendCreateRequest();
-
     void printCreateRequest() {
         string req = getCreateRequest();
         cout << req << endl;
     }
 
+    // for test
     friend std::ostream& operator<<(std::ostream& out, const Client& client);
 };
 
@@ -59,13 +61,10 @@ template <typename TYPE, void (TYPE::*_RunThread)()>
 void* _thread_run(void* param) {
     TYPE* This =
         (TYPE*)param;  //传入的是object的this指针，用于启动非静态成员函数
-    // This->_RunThread();
+    This->_RunThread();
     return NULL;
 }
 
-void createAccount(int account_id, float balance, XMLDocument& request);
-
-void createSymbol(string sym, int account_id, int amount, XMLDocument& request);
-
 std::ostream& operator<<(std::ostream& out, const Client& client);
+
 #endif

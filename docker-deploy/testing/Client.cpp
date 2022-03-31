@@ -12,82 +12,94 @@ using namespace tinyxml2;
 
 #define MAX_LENGTH 65536
 #define N_Thread_CREATE 3  //用于创建并发送create type的线程数量
-#define NUM_SYMBOL 2
+#define N_Thread_TRANS 3 //用于创建并发送transaction type的线程数量
+#define NUM_SYMBOL 2     //每个Create Request中添加的symbol数量 
 #define INITIAL_SYMBOL_AMOUNT 100
 #define INITIAL_BALANCE 1000.0
+
+void createAccount(int account_id, float balance, XMLDocument& request);
+
+void createSymbol(string sym, int account_id, int amount, XMLDocument& request);
 
 static vector<string> symbolName = {"Byd", "Tesla", "Xpeng",
                                     "Nio", "BMW",   "ONE"};
 
+
 Client::Client(string name, string port, int id)
     : serverName(name), serverPort(port), account_id(id), balance(0.0) {
-    // server_fd = clientRequestConnection(serverName, serverPort);
+    server_fd = clientRequestConnection(serverName, serverPort);
 }
 
 void Client::run() {
-    vector<pthread_t> createThreads;
+  vector<pthread_t> createThreads;
 
-    // send a batch of create type request (add account and symbols)
-    for (size_t i = 0; i < N_Thread_CREATE; i++) {
-        pthread_t t;
-        int res = pthread_create(
-            &t, NULL, _thread_run<Client, &Client::sendCreateRequest>, this);
-        if (res < 0) {
-            std::cerr << "pthread create error.\n";
-            exit(EXIT_FAILURE);
-        }
-        createThreads.push_back(t);
+  // send a batch of create type request (add account and symbols)
+  for (size_t i = 0; i < N_Thread_CREATE; i++) {
+    pthread_t t;
+    int res =
+        pthread_create(&t, NULL, _thread_run<Client, &Client::sendCreateRequestAndGetResponse>, this);
+    if (res < 0) {
+      std::cerr << "pthread create error.\n";
+      exit(EXIT_FAILURE);
     }
-    for (size_t i = 0; i < N_Thread_CREATE; i++) {
-        pthread_join(createThreads[i], NULL);
-    }
+    createThreads.push_back(t);
+  }
+  for (size_t i = 0; i < N_Thread_CREATE; i++) {
+    pthread_join(createThreads[i], NULL);
+  }
 
-    //发完create后，生成 threads 发送大量的trans request
-    // TODO
+  // send a batch of TRANSACTION type request (randomly buy symbols, and randomly sell symbols)
+  createThreads.clear();
+  for (size_t i = 0; i < N_Thread_CREATE; i++) {
+    pthread_t t;
+    int res =
+        pthread_create(&t, NULL, _thread_run<Client, &Client::sendTransRequestAndGetResponse>, this);
+    if (res < 0) {
+      std::cerr << "pthread create error.\n";
+      exit(EXIT_FAILURE);
+    }
+    createThreads.push_back(t);
+  }
+  for (size_t i = 0; i < N_Thread_CREATE; i++) {
+    pthread_join(createThreads[i], NULL);
+  }
 }
 
 /*
-    send "CREATE" request, which include one create account request, and several
-   create symbol request.
+    send "CREATE" request, which include one create account request, and several create symbol request.
+    Then recv response from sever, save it as xml file.
 */
-void Client::sendCreateRequest() {
-    pthread_t self = pthread_self();
+void Client::sendCreateRequestAndGetResponse() {
+  pthread_t self = pthread_self();
 
-    string XMLrequest = getCreateRequest();
+  string XMLrequest = getCreateRequest();
 
-    // save request and send it to server
-    string requestFileName = "t" + to_string(self) + "_createRequest.xml";
-    convertStringToFile(requestFileName, XMLrequest);
-    if (send(server_fd, XMLrequest.c_str(), XMLrequest.length(), 0) < 0) {
-        throw MyException("Fail to send GET request to server.\n");
-    }
+  // save request and send it to server
+  string requestFileName = "t" + to_string(self) + "_createRequest.xml";
+  convertStringToFile(requestFileName, XMLrequest);
+  if (send(server_fd, XMLrequest.c_str(), XMLrequest.length(), 0) < 0) {
+    throw MyException("Fail to send GET request to server.\n");
+  }
 
-    // receive response from server
-    string responseFileName = "t" + to_string(self) + "_createReponse.xml";
-    vector<char> buffer(MAX_LENGTH, 0);
-    int len = recv(server_fd, &(buffer.data()[0]), MAX_LENGTH, 0);
-    if (len <= 0) {
-        throw MyException("Fail to receive response from server.\n");
-    }
-    string XMLresponse(buffer.data(), len);
-    convertStringToFile(responseFileName, XMLresponse);
-    return;
+  // receive response from server
+  string responseFileName = "t" + to_string(self) + "_createReponse.xml";
+  vector<char> buffer(MAX_LENGTH, 0);
+  int len = recv(server_fd, &(buffer.data()[0]), MAX_LENGTH, 0);
+  if (len <= 0) {
+    throw MyException("Fail to receive response from server.\n");
+  }
+  string XMLresponse(buffer.data(), len);
+  convertStringToFile(responseFileName, XMLresponse);
+
+  return;
 }
 
 /*
   generate "create" repquest, which include one create account request, and
   several create symbol request. each account has random balance. it will create
-  2 random symbols with random amount in this account.
+  several random symbols with random amount in this account.
 */
 string Client::getCreateRequest() {
-    /*
-      <create>
-        <account id="ACCOUNT_ID" balance="BALANCE"/> #0 or more
-        <symbol sym="SYM"> #0 or more
-          <account id="ACCOUNT_ID">NUM</account> #1 or more
-        </symbol>
-      </create>
-    */
     XMLDocument request;
 
     // Add declaration for request xml (e.g. <?xml version="1.0"
@@ -127,7 +139,7 @@ string Client::getCreateRequest() {
 }
 
 /*
-Given an XMLDocument object, add an account node under its root
+  Given an XMLDocument object, add an account node under its root
 */
 void createAccount(int account_id, float balance, XMLDocument& request) {
     //<account id="ACCOUNT_ID" balance="BALANCE"/>
@@ -139,7 +151,7 @@ void createAccount(int account_id, float balance, XMLDocument& request) {
 }
 
 /*
-Given an XMLDocument object, add a symbol node under its root
+  Given an XMLDocument object, add a symbol node under its root
 */
 void createSymbol(string sym,
                   int account_id,
@@ -168,4 +180,13 @@ std::ostream& operator<<(std::ostream& out, const Client& client) {
         cout << s.first << ":" << s.second << endl;
     }
     return out;
+}
+
+
+/*
+    send "TRANSACTION" request, which include several order requests. client will randomy buy symbols, and randomly 
+    sell the symbols. Then recv response from sever, save it as xml file.
+*/
+void Client::sendTransRequestAndGetResponse(){
+
 }

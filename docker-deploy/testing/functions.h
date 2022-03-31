@@ -13,4 +13,5 @@ void convertStringToFile(string fileName, string s);
   return random integer range from [min,max].
 */
 int getRandomINT(int min, int max);
+
 #endif
