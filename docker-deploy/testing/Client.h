@@ -12,6 +12,13 @@
 #include "functions.h"
 #include "tinyxml2.h"
 
+#define MAX_LENGTH 65536
+#define N_Thread_CREATE 3  //用于创建并发送create type的线程数量
+#define N_Thread_TRANS 3   //用于创建并发送transaction type的线程数量
+#define NUM_SYMBOL 2       //每个Create Request中添加的symbol数量
+#define INITIAL_SYMBOL_AMOUNT 100
+#define INITIAL_BALANCE 1000.0
+
 using namespace tinyxml2;
 using namespace std;
 
@@ -20,7 +27,7 @@ class Args {
   int account_id;
   string serverName;
   string serverPort;
-  
+
  public:
   Args(string name, string port, int id) :
       serverName(name), serverPort(port), account_id(id) {}
@@ -29,10 +36,11 @@ class Args {
 
 class Client {
  private:
+  string serverName;
+  string serverPort;
   int account_id;
-  int server_fd;
   float balance;
-  unordered_map<string, int> symbol; // symbols:amount owned by this client
+  unordered_map<string, int> symbol;  // symbols:amount owned by this client
 
  private:
   template<typename TYPE, int C>  //线程启动函数，声明为模板函数
@@ -53,9 +61,10 @@ class Client {
   string getCreateRequest();
 
  public:
-  Client(int id);
-  ~Client() { close(server_fd); }
-  void run(const string & serverName, const string & serverPort);
+  Client(const string & Name, const string & Port, int id) :
+      serverName(Name), serverPort(Port), account_id(id), balance(INITIAL_BALANCE) {}
+  ~Client() {}
+  void run();
   void printCreateRequest() {
     string req = getCreateRequest();
     cout << req << endl;

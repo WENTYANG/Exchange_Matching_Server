@@ -10,12 +10,6 @@
 using namespace std;
 using namespace tinyxml2;
 
-#define MAX_LENGTH 65536
-#define N_Thread_CREATE 3  //用于创建并发送create type的线程数量
-#define N_Thread_TRANS 3   //用于创建并发送transaction type的线程数量
-#define NUM_SYMBOL 2       //每个Create Request中添加的symbol数量
-#define INITIAL_SYMBOL_AMOUNT 100
-#define INITIAL_BALANCE 1000.0
 
 void createAccount(int account_id, float balance, XMLDocument & request);
 
@@ -23,13 +17,8 @@ void createSymbol(string sym, int account_id, int amount, XMLDocument & request)
 
 static vector<string> symbolName = {"Byd", "Tesla", "Xpeng", "Nio", "BMW", "ONE"};
 
-Client::Client(int id) : account_id(id), balance(0.0) {
-}
 
-void Client::run(const string & serverName, const string & serverPort) {
-  
-  server_fd = clientRequestConnection(serverName, serverPort);
-
+void Client::run() {
   vector<pthread_t> createThreads;
 
   // send a batch of create type request (add account and symbols)
@@ -67,6 +56,7 @@ void Client::run(const string & serverName, const string & serverPort) {
     Then recv response from sever, save it as xml file.
 */
 void Client::sendCreateRequestAndGetResponse() {
+  int server_fd = clientRequestConnection(serverName, serverPort);
   pthread_t self = pthread_self();
 
   string XMLrequest = getCreateRequest();
@@ -75,7 +65,7 @@ void Client::sendCreateRequestAndGetResponse() {
   string requestFileName = "./results/t" + to_string(self) + "_createRequest.xml";
   convertStringToFile(requestFileName, XMLrequest);
   if (send(server_fd, XMLrequest.c_str(), XMLrequest.length(), 0) < 0) {
-    throw MyException("Fail to send GET request to server.\n");
+    throw MyException("Fail to send XML request to server.\n");
   }
 
   // receive response from server
@@ -88,6 +78,7 @@ void Client::sendCreateRequestAndGetResponse() {
   string XMLresponse(buffer.data(), len);
   convertStringToFile(responseFileName, XMLresponse);
 
+  close(server_fd);
   return;
 }
 

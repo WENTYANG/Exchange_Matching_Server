@@ -43,9 +43,8 @@ void checkInput(int argc, char * argv[], string & masterName, string & masterPor
 
 void * initializeClient(void * ptr) {
   Args * info = (Args *)ptr;
-  Client c(info->account_id);
-  
-  c.run(info->serverName, info->serverPort);
+  Client c(info->serverName, info->serverPort, info->account_id);
+  c.run();
 
   delete info;
   return nullptr;

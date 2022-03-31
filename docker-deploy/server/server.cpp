@@ -34,12 +34,14 @@ void Server::run() {
     // server receive request
     string XMLrequest;
     recvRequest(client_fd, XMLrequest);
+    size_t firstLine = XMLrequest.find('\n', 0);
+    XMLrequest = XMLrequest.substr(firstLine + 1);  // get rid of the number
 
     // generate new thread for each request
     ClientInfo * info = new ClientInfo(client_fd, client_id, XMLrequest);
     pthread_t thread;
     pthread_create(&thread, NULL, handleRequest, info);
-
+    
     client_id++;
   }
 }
