@@ -88,8 +88,8 @@ void * Server::handleRequest(void * info) {
   // execute request
   r->executeRequest();
 
-  //TODO: send back response
-  //sendResponse(client_info->client_fd, r->response);
+  // send back response
+  sendResponse(client_info->client_fd, r->getResponseStr());
 
   delete client_info;
   return nullptr;

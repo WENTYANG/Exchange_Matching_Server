@@ -3,7 +3,7 @@
 #include "Client.h"
 #include "exception.h"
 
-#define N_client 20  //生成的client数量
+#define N_client 2  //生成的client数量
 
 void checkInput(int argc, char * argv[], string & masterName, string & masterPort);
 void * initializeClient(void * ptr);
@@ -19,7 +19,7 @@ int main(int argc, char * argv[]) {
   for (size_t i = 0; i < N_client; i++) {
     Args * info = new Args(serverName, serverPort, i);
     pthread_t t;
-    int res = pthread_create(&t, NULL, initializeClient, &info);
+    int res = pthread_create(&t, NULL, initializeClient, info);
     if (res < 0) {
       std::cerr << "pthread create error.\n";
       exit(EXIT_FAILURE);
@@ -43,8 +43,9 @@ void checkInput(int argc, char * argv[], string & masterName, string & masterPor
 
 void * initializeClient(void * ptr) {
   Args * info = (Args *)ptr;
-  Client c(info->serverName, info->serverPort, info->account_id);
-  c.run();
+  Client c(info->account_id);
+  
+  c.run(info->serverName, info->serverPort);
 
   delete info;
   return nullptr;

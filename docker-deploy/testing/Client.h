@@ -17,20 +17,18 @@ using namespace std;
 
 class Args {
  public:
+  int account_id;
   string serverName;
   string serverPort;
-  int account_id;
-
+  
  public:
   Args(string name, string port, int id) :
-      serverName(name), serverPort(port), account_id(id) {}
-  ~Args(){}
+      serverName(name.c_str()), serverPort(port.c_str()), account_id(id) {}
+  ~Args() {}
 };
 
 class Client {
  private:
-  string serverName;
-  string serverPort;
   int account_id;
   int server_fd;
   float balance;
@@ -43,7 +41,7 @@ class Client {
     if (C == 1) {
       This->sendCreateRequestAndGetResponse();
     }
-    else if(C == 2){
+    else if (C == 2) {
       This->sendTransRequestAndGetResponse();
     }
     return nullptr;
@@ -55,9 +53,9 @@ class Client {
   string getCreateRequest();
 
  public:
-  Client(string name, string port, int id);
+  Client(int id);
   ~Client() { close(server_fd); }
-  void run();
+  void run(const string & serverName, const string & serverPort);
   void printCreateRequest() {
     string req = getCreateRequest();
     cout << req << endl;
