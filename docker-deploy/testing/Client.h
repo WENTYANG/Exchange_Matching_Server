@@ -13,67 +13,74 @@
 #include "tinyxml2.h"
 
 #define MAX_LENGTH 65536
-#define N_Thread_CREATE 3  //用于创建并发送create type的线程数量
-#define N_Thread_TRANS 3   //用于创建并发送transaction type的线程数量
-#define NUM_SYMBOL 2       //每个Create Request中添加的symbol数量
-#define INITIAL_SYMBOL_AMOUNT 100
-#define INITIAL_BALANCE 1000.0
+#define N_Thread_CREATE 20  //用于创建并发送create type的线程数量
+#define N_Thread_TRANS 3  //用于创建并发送transaction type的线程数量
+#define NUM_SYMBOL 2      //每个Create Request中添加的symbol数量
+#define INITIAL_SYMBOL_AMOUNT 100  //每个symbol的初始amount
+#define INITIAL_BALANCE 1000.0     // account的初始balance
+#define NUM_ORDER 2  //每个account分别发送buy和sell的数量 (共NUM_ORDER*2个order)
+#define ORDER_PRICE_LOWERBOUND 5   //交易时价格的最低值
+#define ORDER_PRICE_UPPERBOUND 30  //交易时价格的最高值
 
 using namespace tinyxml2;
 using namespace std;
 
 class Args {
- public:
-  int account_id;
-  string serverName;
-  string serverPort;
+   public:
+    int account_id;
+    string serverName;
+    string serverPort;
 
- public:
-  Args(string name, string port, int id) :
-      serverName(name), serverPort(port), account_id(id) {}
-  ~Args() {}
+   public:
+    Args(string name, string port, int id)
+        : serverName(name), serverPort(port), account_id(id) {}
+    ~Args() {}
 };
 
 class Client {
- private:
-  string serverName;
-  string serverPort;
-  int account_id;
-  float balance;
-  unordered_map<string, int> symbol;  // symbols:amount owned by this client
+   private:
+    string serverName;
+    string serverPort;
+    int account_id;
+    float balance;
+    unordered_map<string, int> symbol;  // symbols:amount owned by this client
 
- private:
-  template<typename TYPE, int C>  //线程启动函数，声明为模板函数
-  static void * _thread_run(void * param) {
-    TYPE * This = (TYPE *)param;  //传入的是object的this指针，用于启动非静态成员函数
-    if (C == 1) {
-      This->sendCreateRequestAndGetResponse();
+   private:
+    template <typename TYPE, int C>  //线程启动函数，声明为模板函数
+    static void* _thread_run(void* param) {
+        TYPE* This =
+            (TYPE*)param;  //传入的是object的this指针，用于启动非静态成员函数
+        if (C == 1) {
+            This->sendCreateRequestAndGetResponse();
+        } else if (C == 2) {
+            This->sendTransRequestAndGetResponse();
+        }
+        return nullptr;
     }
-    else if (C == 2) {
-      This->sendTransRequestAndGetResponse();
+
+   private:
+    void sendTransRequestAndGetResponse();
+    void sendCreateRequestAndGetResponse();
+    string getCreateRequest();
+    string getTransRequest();
+
+   public:
+    Client(const string& Name, const string& Port, int id)
+        : serverName(Name),
+          serverPort(Port),
+          account_id(id),
+          balance(INITIAL_BALANCE) {}
+    ~Client() {}
+    void run();
+    void printCreateRequest() {
+        string req = getCreateRequest();
+        cout << req << endl;
     }
-    return nullptr;
-  }
 
- private:
-  void sendTransRequestAndGetResponse();
-  void sendCreateRequestAndGetResponse();
-  string getCreateRequest();
-
- public:
-  Client(const string & Name, const string & Port, int id) :
-      serverName(Name), serverPort(Port), account_id(id), balance(INITIAL_BALANCE) {}
-  ~Client() {}
-  void run();
-  void printCreateRequest() {
-    string req = getCreateRequest();
-    cout << req << endl;
-  }
-
-  // for test
-  friend std::ostream & operator<<(std::ostream & out, const Client & client);
+    // for test
+    friend std::ostream& operator<<(std::ostream& out, const Client& client);
 };
 
-std::ostream & operator<<(std::ostream & out, const Client & client);
+std::ostream& operator<<(std::ostream& out, const Client& client);
 
 #endif
