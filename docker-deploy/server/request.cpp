@@ -140,7 +140,7 @@ void Order::execute(XMLDocument & response, connection * C) {
             break;
           }
         }
-        if (amount == 0) {  //当前订单恰好全部交易完成，不用继续后续匹配
+        if (amount == 0) {  //all the amount has been matched and executed, stop matching 
           break;
         }
       }

@@ -73,7 +73,7 @@ void Client::sendCreateRequestAndGetResponse() {
 
   // save request and send it to server
   string requestFileName = "./requests/t" + to_string(self) + "_createRequest.xml";
-  //convertStringToFile(requestFileName, XMLrequest);
+  convertStringToFile(requestFileName, XMLrequest);
   if (send(server_fd, XMLrequest.c_str(), XMLrequest.length(), 0) < 0) {
     throw MyException("Fail to send XML request to server.\n");
   }
@@ -86,7 +86,7 @@ void Client::sendCreateRequestAndGetResponse() {
     throw MyException("Fail to receive response from server.\n");
   }
   string XMLresponse(buffer.data(), len);
-  //convertStringToFile(responseFileName, XMLresponse);
+  convertStringToFile(responseFileName, XMLresponse);
 
   // calculate the latency
   gettimeofday(&t_end, NULL);

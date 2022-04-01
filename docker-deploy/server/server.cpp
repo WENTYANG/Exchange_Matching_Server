@@ -57,7 +57,7 @@ void Server::run() {
       pthread_create(&thread, NULL, _thread_run<Thread_args, Server, 1>, args);
       mtx.lock();
       curRunThreadNum++;
-      cout<<"thread#:"<<curRunThreadNum<<" create"<<endl;  // 主线程为#0
+      cout<<"thread#:"<<curRunThreadNum<<" create"<<endl;  // main thread# is 0
       mtx.unlock();
     }
   }

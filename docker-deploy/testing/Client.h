@@ -13,8 +13,8 @@
 #include "tinyxml2.h"
 
 #define MAX_LENGTH 65536
-#define N_Thread_CREATE 2  //用于创建并发送create type的线程数量
-#define N_Thread_TRANS 3    //用于创建并发送transaction type的线程数量
+#define N_Thread_CREATE 1  //用于创建并发送create type的线程数量
+#define N_Thread_TRANS 0    //用于创建并发送transaction type的线程数量
 #define NUM_SYMBOL 2        //每个Create Request中添加的symbol数量
 #define INITIAL_SYMBOL_AMOUNT 100  //每个symbol的初始amount
 #define INITIAL_BALANCE 1000.0     // account的初始balance
@@ -51,7 +51,7 @@ class Client {
     template <typename TYPE, int C>  //线程启动函数，声明为模板函数
     static void* _thread_run(void* param) {
         TYPE* This =
-            (TYPE*)param;  //传入的是object的this指针，用于启动非静态成员函数
+            (TYPE*)param; 
         if (C == 1) {
             This->sendCreateRequestAndGetResponse();
         } else if (C == 2) {

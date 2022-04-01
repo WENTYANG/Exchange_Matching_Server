@@ -5,7 +5,7 @@
 #include "Client.h"
 #include "exception.h"
 
-#define N_client 100  //生成的client数量
+#define N_client 1  // the number of clients
 
 void checkInput(int argc, char * argv[], string & masterName, string & masterPort);
 void * initializeClient(void * ptr);

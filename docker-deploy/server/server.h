@@ -45,7 +45,7 @@ class Server {
   template<typename TYPE, typename CLASS_TYPE, int C>  //线程启动函数，声明为模板函数
   static void * _thread_run(void * param) {
     TYPE* ptr = (TYPE*) param;
-    CLASS_TYPE * This = (CLASS_TYPE *)ptr->This;  //传入的是object的this指针，用于启动非静态成员函数
+    CLASS_TYPE * This = (CLASS_TYPE *)ptr->This; 
     if (C == 1) {
       This->handleRequest(ptr->arg_1);
     }
