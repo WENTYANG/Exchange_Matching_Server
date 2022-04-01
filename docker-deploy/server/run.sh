@@ -6,7 +6,7 @@ make
 
 ls -al
 
-./server
+taskset -c 0 ./server
 
 while true
 do

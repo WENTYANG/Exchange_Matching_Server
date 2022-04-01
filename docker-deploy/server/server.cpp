@@ -162,7 +162,7 @@ void Server::sendResponse(int client_fd, const string & XMLresponse) {
 connection * Server::connectDB(string dbName, string userName, string password) {
   mtx_server.lock();
   connection * C =
-      new connection("dbname=" + dbName + " user=" + userName + " password=" + password);
+      new connection("host=db port=5432 dbname=" + dbName + " user=" + userName + " password=" + password);
   if (C->is_open()) {
     // cout << "Opened database successfully: " << C->dbname() << endl;
   }
@@ -179,7 +179,7 @@ connection * Server::connectDB(string dbName, string userName, string password) 
 */
 void Server::initializeDB(connection * C) {
   dropAllTable(C);
-  createTable(C, "../sql/table.sql");
+  createTable(C, "./sql/table.sql");
 }
 
 /*
