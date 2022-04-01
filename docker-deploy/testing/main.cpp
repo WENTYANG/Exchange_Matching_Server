@@ -1,10 +1,11 @@
+#include <sys/time.h>
+
 #include <iostream>
 
 #include "Client.h"
 #include "exception.h"
-#include<time.h>
 
-#define N_client 200  //生成的client数量
+#define N_client 100  //生成的client数量
 
 void checkInput(int argc, char * argv[], string & masterName, string & masterPort);
 void * initializeClient(void * ptr);
@@ -15,8 +16,8 @@ int main(int argc, char * argv[]) {
   string serverPort;
   checkInput(argc, argv, serverName, serverPort);
 
-  clock_t start,end;
-  start = clock();
+  timeval t_start, t_end;
+  gettimeofday(&t_start, NULL);
 
   // generate clients
   vector<pthread_t> threads;
@@ -33,8 +34,15 @@ int main(int argc, char * argv[]) {
   for (size_t i = 0; i < N_client; i++) {
     pthread_join(threads[i], NULL);
   }
-  end=clock();
-  cout<<"run time:"<< (double)(end-start)/CLOCKS_PER_SEC <<"s.\n";
+
+  // get performance metrics
+  gettimeofday(&t_end, NULL);
+  double runTime =
+      (t_end.tv_sec - t_start.tv_sec) + (t_end.tv_usec - t_start.tv_usec) / 1000000.0;
+  cout << "total run time:" << runTime << "s.\n";
+  int N_totalRequest = N_client * (N_Thread_CREATE + N_Thread_TRANS);
+  cout << "avg latency:" << latencySum / N_totalRequest << "s.\n";
+
   return 0;
 }
 

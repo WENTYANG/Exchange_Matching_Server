@@ -13,8 +13,8 @@
 #include "tinyxml2.h"
 
 #define MAX_LENGTH 65536
-#define N_Thread_CREATE 5  //用于创建并发送create type的线程数量
-#define N_Thread_TRANS 5    //用于创建并发送transaction type的线程数量
+#define N_Thread_CREATE 2  //用于创建并发送create type的线程数量
+#define N_Thread_TRANS 3    //用于创建并发送transaction type的线程数量
 #define NUM_SYMBOL 2        //每个Create Request中添加的symbol数量
 #define INITIAL_SYMBOL_AMOUNT 100  //每个symbol的初始amount
 #define INITIAL_BALANCE 1000.0     // account的初始balance
@@ -24,6 +24,8 @@
 
 using namespace tinyxml2;
 using namespace std;
+
+extern double latencySum;
 
 class Args {
    public:
@@ -69,7 +71,8 @@ class Client {
         : serverName(Name),
           serverPort(Port),
           account_id(id),
-          balance(INITIAL_BALANCE) {}
+          balance(INITIAL_BALANCE) {
+          }
     ~Client() {}
     void run();
     void printCreateRequest() {
