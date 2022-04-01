@@ -42,7 +42,7 @@ class Server {
   queue<ClientInfo*> requestQueue;  // save request
 
  private:
-  template<typename TYPE, typename CLASS_TYPE, int C>  //线程启动函数，声明为模板函数
+  template<typename TYPE, typename CLASS_TYPE, int C>  //Thread startup function
   static void * _thread_run(void * param) {
     TYPE* ptr = (TYPE*) param;
     CLASS_TYPE * This = (CLASS_TYPE *)ptr->This; 

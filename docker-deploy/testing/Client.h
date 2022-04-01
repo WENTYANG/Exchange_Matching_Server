@@ -48,7 +48,7 @@ class Client {
     unordered_map<string, int> symbol;  // symbols:amount owned by this client
 
    private:
-    template <typename TYPE, int C>  //线程启动函数，声明为模板函数
+    template <typename TYPE, int C>  // Thread startup function
     static void* _thread_run(void* param) {
         TYPE* This =
             (TYPE*)param; 

@@ -1,11 +1,14 @@
 #include "server.h"
 
 #define MAX_LENGTH 65536
-
-std::mutex mtx;
+ 
+std::mutex mtx_server; // use in server for thread counting, dataBase connnect, resourceClean.
 
 /*
-  限制了最大线程数量，应该改进为pre_create(线程池)，减少线程生成销毁的开销。
+  limit the max number of running thread. It should use the thread pool to handle threads
+  to reduce the cost of create and destory new threads repeatly. There is still a bug. When running threads 
+  reach the limit and the last request is received,push into the queue, requests in queue can not be handled
+  in the future.
 */
 void Server::run() {
   // initialize database
@@ -55,22 +58,22 @@ void Server::run() {
       Thread_args * args = new Thread_args(this, info);
       pthread_t thread;
       pthread_create(&thread, NULL, _thread_run<Thread_args, Server, 1>, args);
-      mtx.lock();
+      mtx_server.lock();
       curRunThreadNum++;
       cout<<"thread#:"<<curRunThreadNum<<" create"<<endl;  // main thread# is 0
-      mtx.unlock();
+      mtx_server.unlock();
     }
   }
 }
 
 void Server::cleanResource(connection * C, ClientInfo * info) {
-  mtx.lock();
+  mtx_server.lock();
   curRunThreadNum--;
   disConnectDB(C);
   delete info;
   delete C;
   cout<<"thread#:"<<curRunThreadNum<<" exit"<<endl;
-  mtx.unlock();
+  mtx_server.unlock();
 }
 
 /* ------------------------ "Request related functions ------------------------ */
@@ -157,7 +160,7 @@ void Server::sendResponse(int client_fd, const string & XMLresponse) {
   the connection* C. It will throw an exception if fails. 
 */
 connection * Server::connectDB(string dbName, string userName, string password) {
-  mtx.lock();
+  mtx_server.lock();
   connection * C =
       new connection("dbname=" + dbName + " user=" + userName + " password=" + password);
   if (C->is_open()) {
@@ -166,7 +169,7 @@ connection * Server::connectDB(string dbName, string userName, string password) 
   else {
     throw MyException("Can't open database.");
   }
-  mtx.unlock();
+  mtx_server.unlock();
   return C;
 }
 
