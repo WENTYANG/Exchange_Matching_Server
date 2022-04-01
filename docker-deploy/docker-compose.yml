@@ -10,10 +10,10 @@ services:
     restart: always
   server:
     build: ./server
-    user: nobody
+    user:  root
     volumes:
       - ./server:/code
-    command: ./server
+    command: bash -c "./run.sh"
     ports:
       - "12345:12345"
     expose:
