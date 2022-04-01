@@ -40,6 +40,7 @@ class Server {
   string portNum;
   volatile int curRunThreadNum; //record the number of threads run in server
   queue<ClientInfo*> requestQueue;  // save request
+  int server_fd;
 
  private:
   template<typename TYPE, typename CLASS_TYPE, int C>  //Thread startup function
@@ -48,6 +49,12 @@ class Server {
     CLASS_TYPE * This = (CLASS_TYPE *)ptr->This; 
     if (C == 1) {
       This->handleRequest(ptr->arg_1);
+    }
+    else if(C == 2){
+      This->recvRequest();
+    }
+    else if(C == 3){
+      This->threadManage();
     }
 
     delete ptr;
@@ -65,7 +72,9 @@ class Server {
   void disConnectDB(connection * C);
 
  private:
-  void recvRequest(int client_fd, string & wholeRequest);
+  void recvRequest();
+  void threadManage();
+  void recvRequest_socket(int client_fd, string & wholeRequest);
   void sendResponse(int client_fd, const string & XMLresponse);
   void initializeDB(connection * C);
   void cleanResource(connection * C, ClientInfo * info);

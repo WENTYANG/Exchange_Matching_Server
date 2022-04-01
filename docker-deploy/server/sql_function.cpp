@@ -11,6 +11,7 @@ using namespace tinyxml2;
     If fails, it will throw exception.
 */
 void createTable(connection* C, string fileName) {
+    cout<<"create new Tables..."<<endl;
     string sql;
     ifstream ifs(fileName.c_str(), ifstream::in);
     if (ifs.is_open() == true) {
@@ -37,7 +38,7 @@ void dropAllTable(connection* C) {
 
     W.exec(sql);
     W.commit();
-    cout << "Drop all the existed table" << endl;
+    cout << "Drop all the existed table..." << endl;
 }
 
 /*
