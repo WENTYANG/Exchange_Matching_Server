@@ -39,7 +39,7 @@ void Client::run() {
     // send a batch of TRANSACTION type request (randomly buy symbols, and
     // randomly sell symbols)
     createThreads.clear();
-    for (size_t i = 0; i < N_Thread_CREATE; i++) {
+    for (size_t i = 0; i < N_Thread_TRANS; i++) {
         pthread_t t;
         int res = pthread_create(&t, NULL, _thread_run<Client, 2>, this);
         if (res < 0) {
@@ -48,7 +48,7 @@ void Client::run() {
         }
         createThreads.push_back(t);
     }
-    for (size_t i = 0; i < N_Thread_CREATE; i++) {
+    for (size_t i = 0; i < N_Thread_TRANS; i++) {
         pthread_join(createThreads[i], NULL);
     }
 }
