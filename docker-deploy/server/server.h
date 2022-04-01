@@ -8,6 +8,10 @@
 #include <pqxx/pqxx>
 #include <string>
 #include <vector>
+#include <queue>
+#include <atomic>
+#include <errno.h>
+#include <mutex>    
 
 #include "clientInfo.h"
 #include "exception.h"
@@ -17,6 +21,8 @@
 #include "sql_function.h"
 
 using namespace pqxx;
+
+#define N_THREAD_LIMIT 100
 
 // Encapsulation parameters for passing parameters to the thread startup function
 class Thread_args {
@@ -32,6 +38,8 @@ class Thread_args {
 class Server {
  private:
   string portNum;
+  volatile int curRunThreadNum; //record the number of threads run in server
+  queue<ClientInfo*> requestQueue;  // save request
 
  private:
   template<typename TYPE, typename CLASS_TYPE, int C>  //线程启动函数，声明为模板函数
@@ -47,14 +55,14 @@ class Server {
   }
 
  public:
-  Server(string port) : portNum(port) {}
+  Server(string port) : portNum(port), curRunThreadNum(1){}
   ~Server() {}
   void run();
   void handleRequest(void * info);
 
  public:
-  static connection * connectDB(string dbName, string userName, string password);
-  static void disConnectDB(connection * C);
+  connection * connectDB(string dbName, string userName, string password);
+  void disConnectDB(connection * C);
 
  private:
   void recvRequest(int client_fd, string & wholeRequest);

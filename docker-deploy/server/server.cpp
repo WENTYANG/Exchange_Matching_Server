@@ -2,11 +2,17 @@
 
 #define MAX_LENGTH 65536
 
+std::mutex mtx;
+
+/*
+  限制了最大线程数量，应该改进为pre_create(线程池)，减少线程生成销毁的开销。
+*/
 void Server::run() {
   // initialize database
   connection * C = connectDB("exchange_server", "postgres", "passw0rd");
   initializeDB(C);
   disConnectDB(C);
+  delete C;
 
   // create server socket, listen to port
   int server_fd;
@@ -37,20 +43,34 @@ void Server::run() {
     recvRequest(client_fd, XMLrequest);
     size_t firstLine = XMLrequest.find('\n', 0);
     XMLrequest = XMLrequest.substr(firstLine + 1);  // get rid of the number
+    ClientInfo * info = new ClientInfo(client_fd, client_id, XMLrequest);
+    requestQueue.push(info);
+    client_id++;
 
     // generate new thread for each request
-    ClientInfo * info = new ClientInfo(client_fd, client_id, XMLrequest);
-    Thread_args * args = new Thread_args(this, info);
-    pthread_t thread;
-    pthread_create(&thread, NULL, _thread_run<Thread_args, Server, 1>, args);
+    while (curRunThreadNum < N_THREAD_LIMIT && !(requestQueue.empty())) {
+      ClientInfo * info = requestQueue.front();
+      requestQueue.pop();
 
-    client_id++;
+      Thread_args * args = new Thread_args(this, info);
+      pthread_t thread;
+      pthread_create(&thread, NULL, _thread_run<Thread_args, Server, 1>, args);
+      mtx.lock();
+      curRunThreadNum++;
+      cout<<"thread#:"<<curRunThreadNum<<" create"<<endl;  // 主线程为#0
+      mtx.unlock();
+    }
   }
 }
 
 void Server::cleanResource(connection * C, ClientInfo * info) {
+  mtx.lock();
+  curRunThreadNum--;
   disConnectDB(C);
   delete info;
+  delete C;
+  cout<<"thread#:"<<curRunThreadNum<<" exit"<<endl;
+  mtx.unlock();
 }
 
 /* ------------------------ "Request related functions ------------------------ */
@@ -126,6 +146,7 @@ void Server::recvRequest(int client_fd, string & wholeRequest) {
 void Server::sendResponse(int client_fd, const string & XMLresponse) {
   int res = send(client_fd, &(XMLresponse.data()[0]), XMLresponse.length(), 0);
   if (res <= 0) {
+    cout << "errno:" << errno << endl;
     throw MyException("fail to send back response.\n");
   }
 }
@@ -136,10 +157,7 @@ void Server::sendResponse(int client_fd, const string & XMLresponse) {
   the connection* C. It will throw an exception if fails. 
 */
 connection * Server::connectDB(string dbName, string userName, string password) {
-  // printf("Connect to %s with User: %s, using Password: %s\n",
-  //        dbName.c_str(),
-  //        userName.c_str(),
-  //        password.c_str());
+  mtx.lock();
   connection * C =
       new connection("dbname=" + dbName + " user=" + userName + " password=" + password);
   if (C->is_open()) {
@@ -148,6 +166,7 @@ connection * Server::connectDB(string dbName, string userName, string password) 
   else {
     throw MyException("Can't open database.");
   }
+  mtx.unlock();
   return C;
 }
 
