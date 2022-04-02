@@ -1,0 +1,8 @@
+1.  Do not sanitize the xml input format.Server can not handle input with wrong format.
+2.  Do not use ORM to communicate with database. Server is easily attacked by SQL injection.
+3.  Do not robust enough for TCP connection. If there is too much connect at the same time, our server will 
+crash down.
+4.  Do not limit the access right for each account. An account can cancel or control other account's order with their
+transaction id.
+5.  Do not protect server from ddos attack. Server will keep waiting for imcoming request.
+6.  Do not 
