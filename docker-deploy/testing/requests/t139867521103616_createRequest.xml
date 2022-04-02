@@ -1,0 +1,11 @@
+256
+<?xml version="1.0" encoding="UTF-8"?>
+<create>
+    <account id="207" balance="1000"/>
+    <symbol sym="Xpeng">
+        <account id="207">100</account>
+    </symbol>
+    <symbol sym="Xpeng">
+        <account id="207">100</account>
+    </symbol>
+</create>

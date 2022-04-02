@@ -1,0 +1,9 @@
+278
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <error id="396">ERROR:  duplicate key value violates unique constraint "account_pkey"
+DETAIL:  Key (account_id)=(396) already exists.
+</error>
+    <created sym="Xpeng" id="396"/>
+    <created sym="Nio" id="396"/>
+</results>

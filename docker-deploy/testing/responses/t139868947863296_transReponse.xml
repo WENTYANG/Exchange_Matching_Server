@@ -1,0 +1,8 @@
+293
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="BMW" amount="0" limit="18" id="2395"/>
+    <opened sym="Tesla" amount="-94" limit="30" id="2404"/>
+    <opened sym="Tesla" amount="0" limit="18" id="2406"/>
+    <opened sym="ONE" amount="-19" limit="16" id="2411"/>
+</results>

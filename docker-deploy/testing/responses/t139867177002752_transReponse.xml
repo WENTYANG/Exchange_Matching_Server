@@ -1,0 +1,8 @@
+332
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="Byd" amount="0" limit="22" id="3987"/>
+    <opened sym="Nio" amount="-56" limit="12" id="3993"/>
+    <error sym="Nio" amount="54" limit="6">Error : Insufficient balance on buyer's account</error>
+    <opened sym="ONE" amount="-51" limit="19" id="3996"/>
+</results>

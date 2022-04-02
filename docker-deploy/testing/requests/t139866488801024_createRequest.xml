@@ -1,0 +1,11 @@
+256
+<?xml version="1.0" encoding="UTF-8"?>
+<create>
+    <account id="269" balance="1000"/>
+    <symbol sym="Tesla">
+        <account id="269">100</account>
+    </symbol>
+    <symbol sym="Tesla">
+        <account id="269">100</account>
+    </symbol>
+</create>

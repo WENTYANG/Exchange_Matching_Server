@@ -1,0 +1,8 @@
+336
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="ONE" amount="0" limit="22" id="1984"/>
+    <error sym="Nio" amount="-45" limit="20">Error : Insufficient symbol on seller's Account</error>
+    <opened sym="Xpeng" amount="0" limit="12" id="1987"/>
+    <opened sym="Tesla" amount="-84" limit="14" id="1990"/>
+</results>

@@ -1,0 +1,11 @@
+252
+<?xml version="1.0" encoding="UTF-8"?>
+<create>
+    <account id="335" balance="1000"/>
+    <symbol sym="BMW">
+        <account id="335">100</account>
+    </symbol>
+    <symbol sym="Nio">
+        <account id="335">100</account>
+    </symbol>
+</create>

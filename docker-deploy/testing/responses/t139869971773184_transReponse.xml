@@ -1,0 +1,8 @@
+377
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <error sym="Nio" amount="39" limit="25">Error : Insufficient balance on buyer's account</error>
+    <opened sym="BMW" amount="-46" limit="10" id="3691"/>
+    <error sym="Xpeng" amount="49" limit="5">Error : Insufficient balance on buyer's account</error>
+    <opened sym="Nio" amount="-15" limit="7" id="3694"/>
+</results>

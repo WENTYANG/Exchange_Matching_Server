@@ -1,0 +1,8 @@
+420
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <error sym="ONE" amount="48" limit="27">Error : Insufficient balance on buyer's account</error>
+    <opened sym="BMW" amount="-60" limit="19" id="2568"/>
+    <error sym="Nio" amount="30" limit="12">Error : Insufficient balance on buyer's account</error>
+    <error sym="ONE" amount="-54" limit="14">Error : Insufficient symbol on seller's Account</error>
+</results>

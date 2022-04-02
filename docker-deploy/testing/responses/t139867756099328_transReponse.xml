@@ -1,0 +1,8 @@
+462
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <error sym="Xpeng" amount="52" limit="10">Error : Insufficient balance on buyer's account</error>
+    <error sym="BMW" amount="-34" limit="9">Error : Insufficient symbol on seller's Account</error>
+    <error sym="Byd" amount="29" limit="30">Error : Insufficient balance on buyer's account</error>
+    <error sym="BMW" amount="-5" limit="5">Error : Insufficient symbol on seller's Account</error>
+</results>

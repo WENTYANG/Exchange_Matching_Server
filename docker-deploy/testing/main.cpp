@@ -6,7 +6,7 @@
 #include "exception.h"
 
 #define N_client 200  // the number of clients
-#define Machine_ID 0
+#define Machine_ID 1
 
 void checkInput(int argc, char * argv[], string & masterName, string & masterPort);
 void * initializeClient(void * ptr);
@@ -41,8 +41,8 @@ int main(int argc, char * argv[]) {
   double runTime =
       (t_end.tv_sec - t_start.tv_sec) + (t_end.tv_usec - t_start.tv_usec) / 1000000.0;
   cout << "total run time:" << runTime << "s.\n";
-  cout << "avg create latency:" << latencyCreate / N_client * N_Thread_CREATE << "s.\n";
-  cout << "avg trans latency:" << latencyTrans / N_client * N_Thread_TRANS << "s.\n";
+  cout << "avg create latency:" << latencyCreate / (N_client * N_Thread_CREATE) << "s.\n";
+  cout << "avg trans latency:" << latencyTrans / (N_client * N_Thread_TRANS) << "s.\n";
 
   return 0;
 }

@@ -1,0 +1,8 @@
+329
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="Byd" amount="90" limit="8" id="372"/>
+    <opened sym="BMW" amount="-3" limit="12" id="376"/>
+    <error sym="Nio" amount="21" limit="27">Error : Insufficient balance on buyer's account</error>
+    <opened sym="BMW" amount="-86" limit="12" id="379"/>
+</results>

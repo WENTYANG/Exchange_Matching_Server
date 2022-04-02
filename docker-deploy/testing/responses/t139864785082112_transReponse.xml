@@ -1,0 +1,8 @@
+332
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="Byd" amount="0" limit="11" id="2673"/>
+    <opened sym="BMW" amount="-48" limit="23" id="2685"/>
+    <opened sym="Byd" amount="0" limit="22" id="2689"/>
+    <error sym="BMW" amount="-85" limit="19">Error : Insufficient symbol on seller's Account</error>
+</results>

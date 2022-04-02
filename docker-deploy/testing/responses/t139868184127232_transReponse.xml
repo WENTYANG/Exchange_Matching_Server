@@ -1,0 +1,8 @@
+335
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="Byd" amount="35" limit="6" id="2674"/>
+    <opened sym="Tesla" amount="-62" limit="15" id="2678"/>
+    <opened sym="Xpeng" amount="0" limit="18" id="2683"/>
+    <error sym="Byd" amount="-80" limit="9">Error : Insufficient symbol on seller's Account</error>
+</results>

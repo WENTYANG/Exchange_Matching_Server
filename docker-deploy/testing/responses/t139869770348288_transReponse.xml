@@ -1,0 +1,8 @@
+333
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="BMW" amount="84" limit="5" id="4062"/>
+    <opened sym="Xpeng" amount="-39" limit="15" id="4065"/>
+    <opened sym="Nio" amount="0" limit="6" id="4068"/>
+    <error sym="ONE" amount="-50" limit="30">Error : Insufficient symbol on seller's Account</error>
+</results>

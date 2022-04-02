@@ -1,0 +1,8 @@
+377
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <error sym="ONE" amount="66" limit="13">Error : Insufficient balance on buyer's account</error>
+    <opened sym="ONE" amount="-78" limit="10" id="1046"/>
+    <error sym="ONE" amount="95" limit="11">Error : Insufficient balance on buyer's account</error>
+    <opened sym="ONE" amount="-80" limit="23" id="1052"/>
+</results>

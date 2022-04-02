@@ -1,0 +1,8 @@
+287
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="Byd" amount="0" limit="22" id="361"/>
+    <opened sym="Xpeng" amount="-95" limit="24" id="370"/>
+    <opened sym="BMW" amount="0" limit="5" id="375"/>
+    <opened sym="Tesla" amount="-38" limit="8" id="385"/>
+</results>

@@ -1,0 +1,11 @@
+254
+<?xml version="1.0" encoding="UTF-8"?>
+<create>
+    <account id="270" balance="1000"/>
+    <symbol sym="Xpeng">
+        <account id="270">100</account>
+    </symbol>
+    <symbol sym="BMW">
+        <account id="270">100</account>
+    </symbol>
+</create>

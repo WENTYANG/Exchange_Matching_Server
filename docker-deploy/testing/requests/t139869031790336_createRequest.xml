@@ -1,0 +1,11 @@
+252
+<?xml version="1.0" encoding="UTF-8"?>
+<create>
+    <account id="284" balance="1000"/>
+    <symbol sym="ONE">
+        <account id="284">100</account>
+    </symbol>
+    <symbol sym="ONE">
+        <account id="284">100</account>
+    </symbol>
+</create>

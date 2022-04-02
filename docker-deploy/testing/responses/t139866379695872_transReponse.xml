@@ -1,0 +1,8 @@
+327
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="Byd" amount="0" limit="22" id="981"/>
+    <opened sym="ONE" amount="0" limit="6" id="988"/>
+    <error sym="Byd" amount="66" limit="29">Error : Insufficient balance on buyer's account</error>
+    <opened sym="Byd" amount="-78" limit="21" id="996"/>
+</results>

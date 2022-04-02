@@ -1,0 +1,8 @@
+377
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="Byd" amount="0" limit="29" id="2179"/>
+    <opened sym="Byd" amount="-97" limit="23" id="2184"/>
+    <error sym="ONE" amount="36" limit="5">Error : Insufficient balance on buyer's account</error>
+    <error sym="Tesla" amount="-97" limit="12">Error : Insufficient symbol on seller's Account</error>
+</results>

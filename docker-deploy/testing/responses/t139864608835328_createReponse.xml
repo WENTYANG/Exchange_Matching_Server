@@ -1,0 +1,9 @@
+276
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <error id="324">ERROR:  duplicate key value violates unique constraint "account_pkey"
+DETAIL:  Key (account_id)=(324) already exists.
+</error>
+    <created sym="Nio" id="324"/>
+    <created sym="ONE" id="324"/>
+</results>

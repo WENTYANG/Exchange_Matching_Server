@@ -1,0 +1,8 @@
+288
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="Byd" amount="21" limit="5" id="2438"/>
+    <opened sym="BMW" amount="-39" limit="30" id="2440"/>
+    <opened sym="BMW" amount="0" limit="10" id="2444"/>
+    <opened sym="Byd" amount="-6" limit="11" id="2455"/>
+</results>

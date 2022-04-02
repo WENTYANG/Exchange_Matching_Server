@@ -1,0 +1,8 @@
+284
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <opened sym="BMW" amount="0" limit="13" id="946"/>
+    <opened sym="BMW" amount="-70" limit="8" id="950"/>
+    <opened sym="Nio" amount="0" limit="13" id="953"/>
+    <opened sym="Byd" amount="-48" limit="11" id="962"/>
+</results>

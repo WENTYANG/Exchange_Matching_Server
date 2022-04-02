@@ -1,0 +1,9 @@
+278
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <error id="333">ERROR:  duplicate key value violates unique constraint "account_pkey"
+DETAIL:  Key (account_id)=(333) already exists.
+</error>
+    <created sym="Tesla" id="333"/>
+    <created sym="BMW" id="333"/>
+</results>
