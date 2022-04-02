@@ -1,9 +1,0 @@
-278
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <error id="282">ERROR:  duplicate key value violates unique constraint "account_pkey"
-DETAIL:  Key (account_id)=(282) already exists.
-</error>
-    <created sym="Tesla" id="282"/>
-    <created sym="Byd" id="282"/>
-</results>

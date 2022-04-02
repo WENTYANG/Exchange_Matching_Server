@@ -1,8 +1,0 @@
-377
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <error sym="ONE" amount="27" limit="10">Error : Insufficient balance on buyer's account</error>
-    <opened sym="ONE" amount="-77" limit="30" id="1061"/>
-    <error sym="BMW" amount="39" limit="24">Error : Insufficient balance on buyer's account</error>
-    <opened sym="Nio" amount="-39" limit="29" id="1062"/>
-</results>

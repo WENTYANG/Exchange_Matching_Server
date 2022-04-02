@@ -1,8 +1,0 @@
-377
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <opened sym="Byd" amount="0" limit="20" id="3989"/>
-    <opened sym="Nio" amount="-76" limit="8" id="3994"/>
-    <error sym="Xpeng" amount="40" limit="25">Error : Insufficient balance on buyer's account</error>
-    <error sym="Nio" amount="-84" limit="28">Error : Insufficient symbol on seller's Account</error>
-</results>

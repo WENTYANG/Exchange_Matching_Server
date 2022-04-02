@@ -1,8 +1,0 @@
-381
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <error sym="ONE" amount="83" limit="30">Error : Insufficient balance on buyer's account</error>
-    <opened sym="Xpeng" amount="-73" limit="11" id="2743"/>
-    <error sym="Xpeng" amount="84" limit="25">Error : Insufficient balance on buyer's account</error>
-    <opened sym="Nio" amount="-15" limit="13" id="2747"/>
-</results>

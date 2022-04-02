@@ -1,8 +1,0 @@
-331
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <opened sym="Tesla" amount="0" limit="12" id="958"/>
-    <opened sym="Byd" amount="-78" limit="22" id="968"/>
-    <error sym="Xpeng" amount="22" limit="10">Error : Insufficient balance on buyer's account</error>
-    <opened sym="BMW" amount="0" limit="6" id="971"/>
-</results>

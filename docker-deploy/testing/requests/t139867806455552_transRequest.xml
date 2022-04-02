@@ -1,8 +1,0 @@
-265
-<?xml version="1.0" encoding="UTF-8"?>
-<transactions id="339">
-    <order sym="BMW" amount="66" limit="6"/>
-    <order sym="ONE" amount="-64" limit="21"/>
-    <order sym="ONE" amount="36" limit="26"/>
-    <order sym="Byd" amount="-98" limit="17"/>
-</transactions>

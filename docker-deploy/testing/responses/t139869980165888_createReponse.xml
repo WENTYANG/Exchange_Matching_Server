@@ -1,9 +1,0 @@
-278
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <error id="216">ERROR:  duplicate key value violates unique constraint "account_pkey"
-DETAIL:  Key (account_id)=(216) already exists.
-</error>
-    <created sym="Nio" id="216"/>
-    <created sym="Xpeng" id="216"/>
-</results>

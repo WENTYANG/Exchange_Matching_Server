@@ -1,8 +1,0 @@
-334
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <opened sym="Xpeng" amount="0" limit="5" id="1295"/>
-    <error sym="Byd" amount="-85" limit="16">Error : Insufficient symbol on seller's Account</error>
-    <opened sym="BMW" amount="0" limit="7" id="1303"/>
-    <opened sym="Tesla" amount="-77" limit="30" id="1309"/>
-</results>

@@ -1,8 +1,0 @@
-333
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <opened sym="ONE" amount="0" limit="15" id="526"/>
-    <opened sym="Tesla" amount="-23" limit="15" id="530"/>
-    <opened sym="Xpeng" amount="0" limit="9" id="532"/>
-    <error sym="Xpeng" amount="-74" limit="5">Error : Insufficient symbol on seller's Account</error>
-</results>

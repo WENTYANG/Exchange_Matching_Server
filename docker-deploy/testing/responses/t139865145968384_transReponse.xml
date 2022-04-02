@@ -1,8 +1,0 @@
-379
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <error sym="Xpeng" amount="96" limit="22">Error : Insufficient balance on buyer's account</error>
-    <opened sym="Nio" amount="-65" limit="9" id="2712"/>
-    <opened sym="Nio" amount="0" limit="13" id="2715"/>
-    <error sym="Tesla" amount="-75" limit="14">Error : Insufficient symbol on seller's Account</error>
-</results>

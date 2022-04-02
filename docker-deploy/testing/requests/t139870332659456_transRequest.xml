@@ -1,8 +1,0 @@
-265
-<?xml version="1.0" encoding="UTF-8"?>
-<transactions id="214">
-    <order sym="ONE" amount="93" limit="12"/>
-    <order sym="Byd" amount="-61" limit="26"/>
-    <order sym="Byd" amount="28" limit="22"/>
-    <order sym="Byd" amount="-4" limit="20"/>
-</transactions>

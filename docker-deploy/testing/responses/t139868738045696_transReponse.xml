@@ -1,8 +1,0 @@
-420
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <error sym="ONE" amount="65" limit="13">Error : Insufficient balance on buyer's account</error>
-    <error sym="BMW" amount="-10" limit="19">Error : Insufficient symbol on seller's Account</error>
-    <error sym="ONE" amount="68" limit="22">Error : Insufficient balance on buyer's account</error>
-    <opened sym="Xpeng" amount="-4" limit="7" id="3930"/>
-</results>

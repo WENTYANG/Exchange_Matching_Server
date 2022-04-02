@@ -1,8 +1,0 @@
-333
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <opened sym="Tesla" amount="0" limit="22" id="4145"/>
-    <opened sym="BMW" amount="-86" limit="15" id="4148"/>
-    <opened sym="Nio" amount="0" limit="8" id="4150"/>
-    <error sym="ONE" amount="-27" limit="21">Error : Insufficient symbol on seller's Account</error>
-</results>

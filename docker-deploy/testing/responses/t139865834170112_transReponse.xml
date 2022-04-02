@@ -1,8 +1,0 @@
-420
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <error sym="Byd" amount="77" limit="10">Error : Insufficient balance on buyer's account</error>
-    <error sym="Nio" amount="-82" limit="23">Error : Insufficient symbol on seller's Account</error>
-    <error sym="ONE" amount="82" limit="25">Error : Insufficient balance on buyer's account</error>
-    <opened sym="ONE" amount="-53" limit="29" id="2361"/>
-</results>

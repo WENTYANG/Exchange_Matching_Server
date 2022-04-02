@@ -1,8 +1,0 @@
-269
-<?xml version="1.0" encoding="UTF-8"?>
-<transactions id="237">
-    <order sym="Xpeng" amount="42" limit="15"/>
-    <order sym="Byd" amount="-26" limit="9"/>
-    <order sym="Nio" amount="22" limit="29"/>
-    <order sym="Tesla" amount="-60" limit="27"/>
-</transactions>

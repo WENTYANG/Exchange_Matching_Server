@@ -1,8 +1,0 @@
-421
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <error sym="Nio" amount="32" limit="7">Error : Insufficient balance on buyer's account</error>
-    <opened sym="Tesla" amount="-48" limit="12" id="947"/>
-    <error sym="Tesla" amount="41" limit="15">Error : Insufficient balance on buyer's account</error>
-    <error sym="Byd" amount="-4" limit="11">Error : Insufficient symbol on seller's Account</error>
-</results>

@@ -1,8 +1,0 @@
-331
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <opened sym="Byd" amount="0" limit="11" id="1810"/>
-    <opened sym="BMW" amount="-98" limit="11" id="1821"/>
-    <error sym="Byd" amount="66" limit="28">Error : Insufficient balance on buyer's account</error>
-    <opened sym="Byd" amount="-6" limit="7" id="1827"/>
-</results>

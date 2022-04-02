@@ -1,8 +1,0 @@
-331
-<?xml version="1.0" encoding="UTF-8"?>
-<results>
-    <opened sym="Nio" amount="0" limit="5" id="2684"/>
-    <opened sym="Byd" amount="-38" limit="23" id="2699"/>
-    <opened sym="ONE" amount="0" limit="30" id="2703"/>
-    <error sym="Byd" amount="-65" limit="22">Error : Insufficient symbol on seller's Account</error>
-</results>
