@@ -14,7 +14,8 @@ using namespace std;
 using namespace tinyxml2;
 
 std::mutex mtx;
-double latencySum = 0.0;
+double latencyCreate = 0.0;
+double latencyTrans = 0.0;
 
 void createAccount(int account_id, float balance, XMLDocument & request);
 
@@ -68,15 +69,16 @@ void Client::sendCreateRequestAndGetResponse() {
 
   string XMLrequest = getCreateRequest();
 
-  timeval t_start, t_end;
-  gettimeofday(&t_start, NULL);
-
   // save request and send it to server
   string requestFileName = "./requests/t" + to_string(self) + "_createRequest.xml";
   convertStringToFile(requestFileName, XMLrequest);
   if (send(server_fd, XMLrequest.c_str(), XMLrequest.length(), 0) < 0) {
     throw MyException("Fail to send XML request to server.\n");
   }
+  
+  // begin count
+  timeval t_start, t_end;
+  gettimeofday(&t_start, NULL);
 
   // receive response from server
   string responseFileName = "./responses/t" + to_string(self) + "_createReponse.xml";
@@ -93,7 +95,7 @@ void Client::sendCreateRequestAndGetResponse() {
   double runTime =
       (t_end.tv_sec - t_start.tv_sec) + (t_end.tv_usec - t_start.tv_usec) / 1000000.0;
   mtx.lock();
-  latencySum += runTime;
+  latencyCreate += runTime;
   mtx.unlock();
 
   close(server_fd);
@@ -118,6 +120,10 @@ void Client::sendTransRequestAndGetResponse() {
     throw MyException("Fail to send XML request to server.\n");
   }
 
+  // begin count
+  timeval t_start, t_end;
+  gettimeofday(&t_start, NULL);
+
   // receive response from server
   string responseFileName = "./responses/t" + to_string(self) + "_transReponse.xml";
   vector<char> buffer(MAX_LENGTH, 0);
@@ -127,6 +133,14 @@ void Client::sendTransRequestAndGetResponse() {
   }
   string XMLresponse(buffer.data(), len);
   convertStringToFile(responseFileName, XMLresponse);
+
+  // calculate the latency
+  gettimeofday(&t_end, NULL);
+  double runTime =
+      (t_end.tv_sec - t_start.tv_sec) + (t_end.tv_usec - t_start.tv_usec) / 1000000.0;
+  mtx.lock();
+  latencyTrans += runTime;
+  mtx.unlock();
 
   close(server_fd);
   return;
